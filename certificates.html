@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Certificates — Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li><li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li><li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+<div id="edit-toolbar"><span>Edit mode</span><button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button><button class="tb-btn tb-save" id="tb-save">Save</button></div>
+<div class="modal-overlay" id="auth-modal"><div class="modal"><h3>Editor Login</h3><p>Enter password to edit.</p><p class="modal-error" id="modal-error">Incorrect password.</p><input type="password" id="password-input" placeholder="Password"/><div class="modal-actions"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="submitPassword()">Unlock</button></div></div></div>
+
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1 data-key="pt">Certificates &amp; Licences</h1>
+      <p data-key="ps">Professional licences held and qualifications in progress.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Active -->
+      <h2 class="section-heading">Active</h2>
+      <div id="cert-active" data-section="cert-active">
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ca1n">Derivative Trading Foundation</div>
+            <div class="item-sub" data-key="ca1s">Bursa Malaysia · Exchange-Traded Derivatives</div>
+            <div class="item-body" data-key="ca1d">Qualifies the holder in the fundamentals of exchange-traded derivatives — futures, options, and related instruments traded on Bursa Malaysia Derivatives Berhad.</div>
+            <div class="tags"><span class="tag">Derivatives</span><span class="tag">Bursa Malaysia</span><span class="tag">Futures &amp; Options</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-active" data-key="ca1b">Active</span></div>
+        </div>
+
+        <button class="add-card-btn" id="add-active-btn" onclick="addActive()">+ Add Active Certificate</button>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- Inactive -->
+      <h2 class="section-heading">Inactive</h2>
+      <div id="cert-inactive" data-section="cert-inactive">
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ci1n">Insurance Planner Licence</div>
+            <div class="item-sub" data-key="ci1s">Malaysian Insurance Institute (MII)</div>
+            <div class="item-body" data-key="ci1d">Authorises the holder to advise and sell life insurance products in Malaysia. Requires passing MII examinations and maintaining professional standards.</div>
+            <div class="tags"><span class="tag">Insurance</span><span class="tag">Malaysia</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-inactive" data-key="ci1b">Inactive</span></div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ci2n">Unit Trust Consultant Licence</div>
+            <div class="item-sub" data-key="ci2s">Federation of Investment Managers Malaysia (FIMM)</div>
+            <div class="item-body" data-key="ci2d">Authorises the holder to distribute and advise on unit trust funds in Malaysia. Regulated by FIMM to ensure professional standards and investor protection.</div>
+            <div class="tags"><span class="tag">Unit Trust</span><span class="tag">Malaysia</span><span class="tag">FIMM</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-inactive" data-key="ci2b">Inactive</span></div>
+        </div>
+
+        <button class="add-card-btn" id="add-inactive-btn" onclick="addInactive()">+ Add Inactive Certificate</button>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- In Progress / Planned -->
+      <h2 class="section-heading">In Progress &amp; Planned</h2>
+      <div id="cert-goals" data-section="cert-goals">
+
+        <div class="row-item fade-up" style="align-items:flex-start;">
+          <div class="row-item-left">
+            <div class="item-title" data-key="g1n">Actuarial Professional Exams (P, FM, IFM)</div>
+            <div class="item-sub" data-key="g1s">Society of Actuaries (SOA)</div>
+            <div class="item-body" data-key="g1d">Working towards SOA actuarial examinations to formalise actuarial credentials alongside the MSc Financial Mathematics degree.</div>
+            <div style="margin-top:0.5rem;"><div class="progress-wrap" style="width:180px;"><div class="progress-fill" style="width:15%;"></div></div></div>
+          </div>
+          <div class="row-item-right">
+            <span class="badge badge-pending" data-key="g1b">In Progress</span>
+            <div class="item-meta" style="margin-top:0.3rem;" data-key="g1p">Target: 2026</div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up" style="align-items:flex-start;">
+          <div class="row-item-left">
+            <div class="item-title" data-key="g2n">CFA Level I</div>
+            <div class="item-sub" data-key="g2s">CFA Institute</div>
+            <div class="item-body" data-key="g2d">Pursuing the Chartered Financial Analyst designation to strengthen investment analysis skills and build global credibility in finance and asset management.</div>
+            <div style="margin-top:0.5rem;"><div class="progress-wrap" style="width:180px;"><div class="progress-fill" style="width:8%;"></div></div></div>
+          </div>
+          <div class="row-item-right">
+            <span class="badge badge-planned" data-key="g2b">Planned</span>
+            <div class="item-meta" style="margin-top:0.3rem;" data-key="g2p">Target: 2026</div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up" style="align-items:flex-start;">
+          <div class="row-item-left">
+            <div class="item-title" data-key="g3n">Capital Market Services Licence (CMSL)</div>
+            <div class="item-sub" data-key="g3s">Securities Commission Malaysia</div>
+            <div class="item-body" data-key="g3d">Seeking a CMSL to formalise ZY-Invest as a regulated investment entity under the Investment Holding Company (IHC) structure and expand investable capital.</div>
+            <div style="margin-top:0.5rem;"><div class="progress-wrap" style="width:180px;"><div class="progress-fill" style="width:5%;"></div></div></div>
+          </div>
+          <div class="row-item-right">
+            <span class="badge badge-planned" data-key="g3b">Planned</span>
+            <div class="item-meta" style="margin-top:0.3rem;" data-key="g3p">Target: 2027</div>
+          </div>
+        </div>
+
+        <button class="add-card-btn" onclick="addGoal()">+ Add Planned Qualification</button>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+<script>
+function addActive(){
+  const l=document.getElementById('cert-active'),b=document.getElementById('add-active-btn'),n=l.querySelectorAll('.row-item').length+1,d=document.createElement('div');
+  d.className='row-item';
+  d.innerHTML=`<div class="row-item-left"><div class="item-title" contenteditable="true" data-key="ca${n}n">Certificate Name</div><div class="item-sub" contenteditable="true" data-key="ca${n}s">Issuing Organisation</div><div class="item-body" contenteditable="true" data-key="ca${n}d">Description.</div></div><div class="row-item-right"><span class="badge badge-active">Active</span></div>`;
+  l.insertBefore(d,b);
+}
+function addInactive(){
+  const l=document.getElementById('cert-inactive'),b=document.getElementById('add-inactive-btn'),n=l.querySelectorAll('.row-item').length+1,d=document.createElement('div');
+  d.className='row-item';
+  d.innerHTML=`<div class="row-item-left"><div class="item-title" contenteditable="true" data-key="ci${n}n">Certificate Name</div><div class="item-sub" contenteditable="true" data-key="ci${n}s">Issuing Organisation</div><div class="item-body" contenteditable="true" data-key="ci${n}d">Description.</div></div><div class="row-item-right"><span class="badge badge-inactive">Inactive</span></div>`;
+  l.insertBefore(d,b);
+}
+function addGoal(){
+  const l=document.getElementById('cert-goals'),b=l.querySelector('.add-card-btn'),n=l.querySelectorAll('.row-item').length+1,d=document.createElement('div');
+  d.className='row-item';
+  d.innerHTML=`<div class="row-item-left"><div class="item-title" contenteditable="true" data-key="g${n}n">Qualification Name</div><div class="item-sub" contenteditable="true" data-key="g${n}s">Issuing Body</div><div class="item-body" contenteditable="true" data-key="g${n}d">Description.</div></div><div class="row-item-right"><span class="badge badge-planned">Planned</span><div class="item-meta" contenteditable="true" data-key="g${n}p">Target: Year</div></div>`;
+  l.insertBefore(d,b);
+}
+</script>
+</body>
+</html>

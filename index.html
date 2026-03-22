@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .hero { padding: 3.5rem 0; border-bottom: 1px solid var(--border); }
+    .hero-grid { display: grid; grid-template-columns: 1fr 260px; gap: 3rem; align-items: start; }
+
+    .hero-name { font-size: 32px; font-weight: 700; color: var(--black); margin-bottom: 0.25rem; }
+    .hero-title { font-size: 13px; font-weight: 500; color: var(--gray-600); margin-bottom: 1.5rem; }
+
+    .hero-bio { font-size: 14px; color: var(--gray-600); line-height: 1.7; margin-bottom: 1.5rem; max-width: 520px; }
+
+    .contact-card {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; font-size: 13px;
+    }
+    .contact-card-header {
+      background: var(--accent); padding: 1rem 1.25rem;
+    }
+    .contact-card-header p { color: rgba(255,255,255,0.9); font-weight: 600; font-size: 13px; }
+    .contact-card-header small { color: rgba(255,255,255,0.55); font-size: 11px; }
+    .contact-row {
+      display: flex; gap: 0.6rem; padding: 0.55rem 1.25rem;
+      border-bottom: 1px solid var(--border); color: var(--gray-600);
+      align-items: flex-start;
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-row .lbl {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--gray-400);
+      width: 70px; flex-shrink: 0; padding-top: 1px;
+    }
+    .contact-row .val { font-size: 13px; line-height: 1.5; }
+
+    @media (max-width: 720px) { .hero-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li>
+    <li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li>
+    <li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+<div id="edit-toolbar"><span>Edit mode</span><button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button><button class="tb-btn tb-save" id="tb-save">Save</button></div>
+<div class="modal-overlay" id="auth-modal"><div class="modal"><h3>Editor Login</h3><p>Enter password to edit.</p><p class="modal-error" id="modal-error">Incorrect password.</p><input type="password" id="password-input" placeholder="Password"/><div class="modal-actions"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="submitPassword()">Unlock</button></div></div></div>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+
+        <div>
+          <h1 class="hero-name" data-key="h_name">Ng Zhi Yao</h1>
+          <p class="hero-title">
+            <span data-key="h_t1">MSc Financial Mathematics, University of Queensland</span><br>
+            <span data-key="h_t2">BSc Actuarial Science, UCSI University &nbsp;·&nbsp; Founder, ZY-Invest</span>
+          </p>
+          <p class="hero-bio" data-key="h_bio">A mathematically driven professional with a background in actuarial science and hands-on experience in pension operations, investment advisory, and process automation. Founder of ZY-Invest, a private investment fund focused on Malaysian equity markets. Currently pursuing a Master of Science in Financial Mathematics at the University of Queensland, Brisbane.</p>
+          <div style="display:flex;gap:0.5rem;">
+            <a href="experience.html" class="btn btn-primary">Experience</a>
+            <a href="investment.html" class="btn btn-outline">Investment</a>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-card-header">
+            <p data-key="cc_name">Ng Zhi Yao</p>
+            <small data-key="cc_sub">Financial Mathematics Student</small>
+          </div>
+          <div class="contact-row"><span class="lbl">Email</span><span class="val" data-key="cc_email">ngzy0825@gmail.com</span></div>
+          <div class="contact-row"><span class="lbl">Phone</span><span class="val" data-key="cc_phone">(+61) 0413 088 069</span></div>
+          <div class="contact-row"><span class="lbl">Location</span><span class="val" data-key="cc_loc">St Lucia, QLD 4067</span></div>
+          <div class="contact-row"><span class="lbl">Study</span><span class="val" data-key="cc_study">UQ, 2025 – Present</span></div>
+          <div class="contact-row"><span class="lbl">Languages</span><span class="val" data-key="cc_lang">Mandarin, English, Malay</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section style="padding: 2rem 0; border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" data-key="s1">2+</div><div class="stat-lbl">Years Experience</div></div>
+        <div class="stat-box"><div class="stat-num" data-key="s2">2</div><div class="stat-lbl">Degrees</div></div>
+        <div class="stat-box"><div class="stat-num" data-key="s3">1</div><div class="stat-lbl">Certificates</div></div>
+        <div class="stat-box"><div class="stat-num" data-key="s4">3</div><div class="stat-lbl">Languages</div></div>
+        <div class="stat-box"><div class="stat-num" data-key="s5">4+</div><div class="stat-lbl">Asset Classes</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pages overview -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-heading">Site Overview</h2>
+      <div class="grid-3">
+        <a href="clubs.html" style="text-decoration:none;" class="fade-up">
+          <div class="card">
+            <div class="item-title">Clubs &amp; Associations</div>
+            <div class="item-body" style="margin-top:0.3rem;">ZY-Invest · Tzu Chi Cheras · ASSA</div>
+            <div class="tags"><span class="tag">3 memberships</span></div>
+          </div>
+        </a>
+        <a href="investment.html" style="text-decoration:none;" class="fade-up">
+          <div class="card">
+            <div class="item-title">Investment Portfolio</div>
+            <div class="item-body" style="margin-top:0.3rem;">Equities · Derivatives · Crowdfunding · Coins</div>
+            <div class="tags"><span class="tag">4 asset classes</span></div>
+          </div>
+        </a>
+        <a href="skills.html" style="text-decoration:none;" class="fade-up">
+          <div class="card">
+            <div class="item-title">Skills &amp; Tools</div>
+            <div class="item-body" style="margin-top:0.3rem;">Excel VBA · Statistics · Actuarial Modelling</div>
+            <div class="tags"><span class="tag">Technical</span></div>
+          </div>
+        </a>
+        <a href="education.html" style="text-decoration:none;" class="fade-up">
+          <div class="card">
+            <div class="item-title">Education</div>
+            <div class="item-body" style="margin-top:0.3rem;">MSc Financial Mathematics, UQ · BSc Actuarial Science, UCSI</div>
+          </div>
+        </a>
+        <a href="experience.html" style="text-decoration:none;" class="fade-up">
+          <div class="card">
+            <div class="item-title">Work Experience</div>
+            <div class="item-body" style="margin-top:0.3rem;">iFAST Global · GrandPine Capital · Kim Gam Enterprise</div>
+          </div>
+        </a>
+        <a href="certificates.html" style="text-decoration:none;" class="fade-up">
+          <div class="card">
+            <div class="item-title">Certificates &amp; Licences</div>
+            <div class="item-body" style="margin-top:0.3rem;">Bursa Derivatives · MII · FIMM · CFA (planned)</div>
+            <div class="tags"><span class="badge badge-active">1 Active</span><span class="badge badge-inactive" style="margin-left:4px;">2 Inactive</span></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

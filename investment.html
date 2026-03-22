@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Investment — Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li><li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li><li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+<div id="edit-toolbar"><span>Edit mode</span><button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button><button class="tb-btn tb-save" id="tb-save">Save</button></div>
+<div class="modal-overlay" id="auth-modal"><div class="modal"><h3>Editor Login</h3><p>Enter password to edit.</p><p class="modal-error" id="modal-error">Incorrect password.</p><input type="password" id="password-input" placeholder="Password"/><div class="modal-actions"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="submitPassword()">Unlock</button></div></div></div>
+
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1 data-key="pt">Investment</h1>
+      <p data-key="ps">Investment activities, portfolio overview, and strategy notes.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <h2 class="section-heading">Portfolio Activities</h2>
+
+      <div id="invest-list" data-section="invest-list">
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="i1t">Equity Crowdfunding</div>
+            <div class="item-sub" data-key="i1s">Alternative Investments · SME Funding · Malaysia</div>
+            <div class="item-body" data-key="i1d">Participating in equity crowdfunding platforms to support early-stage Malaysian businesses while acquiring equity stakes. Investment journal started in 2026 — documenting deal analysis, investment rationale, and portfolio outcomes.</div>
+            <div class="tags"><span class="tag">ECF</span><span class="tag">Malaysia</span><span class="tag">SME</span><span class="tag">Journal 2026</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-pending" data-key="i1b">Journal 2026</span></div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="i2t">Coin Collection</div>
+            <div class="item-sub" data-key="i2s">Numismatics · Alternative Asset</div>
+            <div class="item-body" data-key="i2d">Building a curated collection of numismatic coins as an alternative store of value. Focus on rare Malaysian, Singaporean, and regional coins with historical significance and collector demand.</div>
+            <div class="tags"><span class="tag">Numismatics</span><span class="tag">Alternative Asset</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-active" data-key="i2b">Active</span></div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="i3t">Share Equities</div>
+            <div class="item-sub" data-key="i3s">Managed via ZY-Invest · Bursa Malaysia</div>
+            <div class="item-body" data-key="i3d">Equity investments managed under ZY-Invest. Focus on value investing principles — identifying undervalued Malaysian-listed companies with strong fundamentals, durable competitive advantages, and a margin of safety. Sector focus includes financials, consumer staples, and infrastructure.</div>
+            <div class="tags"><span class="tag">Bursa Malaysia</span><span class="tag">Value Investing</span><span class="tag">ZY-Invest</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-active" data-key="i3b">Active</span></div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="i4t">Derivatives</div>
+            <div class="item-sub" data-key="i4s">Options · Futures · Structured Products</div>
+            <div class="item-body" data-key="i4d">Developing knowledge and strategy in derivatives markets. Informed by the MSc Financial Mathematics programme covering stochastic calculus, options pricing (Black-Scholes, binomial), and structured product analysis. Plans to apply to live positions as expertise deepens.</div>
+            <div class="tags"><span class="tag">Options</span><span class="tag">Futures</span><span class="tag">Black-Scholes</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-planned" data-key="i4b">In Development</span></div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="i5t">Fixed Income Instruments</div>
+            <div class="item-sub" data-key="i5s">Unit Trusts · Sharpe Ratio Selection</div>
+            <div class="item-body" data-key="i5d">Investing via unit trusts with selective instrument picking guided by the Sharpe ratio — a measure that balances expected return against volatility to identify risk-adjusted outperformers.</div>
+            <div class="tags"><span class="tag">Unit Trust</span><span class="tag">Sharpe Ratio</span><span class="tag">Fixed Income</span><span class="tag">Risk-Adjusted Return</span></div>
+          </div>
+          <div class="row-item-right"><span class="badge badge-active" data-key="i5b">Active</span></div>
+        </div>
+
+        <button class="add-card-btn" onclick="addInvest()">+ Add</button>
+      </div>
+
+      <hr class="divider"/>
+      <div class="info-box" data-key="disc">Disclaimer: This page is for personal reference and documentation only. Nothing here constitutes financial advice.</div>
+
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+<script>
+function addInvest(){
+  const l=document.getElementById('invest-list'),b=l.querySelector('.add-card-btn'),n=l.querySelectorAll('.row-item').length+1,d=document.createElement('div');
+  d.className='row-item';
+  d.innerHTML=`<div class="row-item-left"><div class="item-title" contenteditable="true" data-key="i${n}t">Investment Type</div><div class="item-sub" contenteditable="true" data-key="i${n}s">Category · Market</div><div class="item-body" contenteditable="true" data-key="i${n}d">Description.</div></div><div class="row-item-right"><span class="badge badge-active" contenteditable="true" data-key="i${n}b">Active</span></div>`;
+  l.insertBefore(d,b);
+}
+</script>
+</body>
+</html>

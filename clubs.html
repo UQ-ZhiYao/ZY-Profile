@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clubs &amp; Associations — Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li><li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li><li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+<div id="edit-toolbar"><span>Edit mode</span><button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button><button class="tb-btn tb-save" id="tb-save">Save</button></div>
+<div class="modal-overlay" id="auth-modal"><div class="modal"><h3>Editor Login</h3><p>Enter password to edit.</p><p class="modal-error" id="modal-error">Incorrect password.</p><input type="password" id="password-input" placeholder="Password"/><div class="modal-actions"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="submitPassword()">Unlock</button></div></div></div>
+
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1 data-key="pt">Clubs &amp; Associations</h1>
+      <p data-key="ps">Professional memberships and community involvement.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container" id="club-list" data-section="club-list">
+
+      <!-- ZY-Invest -->
+      <div class="row-item fade-up">
+        <div class="row-item-left">
+          <div class="item-title" data-key="c1n">ZY-Invest</div>
+          <div class="item-sub" data-key="c1r">Founder &amp; Fund Manager · Private Investment Fund · Malaysia</div>
+          <div class="item-body" data-key="c1d">A private investment fund focused on Malaysian equity markets. Currently in transition, with plans to incorporate as an Investment Holding Company (IHC) in 2027. Seeking a Capital Market Services Licence (CMSL) from the Securities Commission Malaysia to formalise operations and enlarge investable capital.</div>
+          <div class="tags"><span class="tag">Private Fund</span><span class="tag">Malaysia</span><span class="tag">IHC 2027</span><span class="tag">CMSL Pending</span></div>
+        </div>
+        <div class="row-item-right">
+          <span class="badge badge-active">Founder</span>
+        </div>
+      </div>
+
+      <!-- Tzu Chi -->
+      <div class="row-item fade-up">
+        <div class="row-item-left">
+          <div class="item-title" data-key="c2n">Tzu Chi Foundation</div>
+          <div class="item-sub" data-key="c2r">Committee Member · Buddhist Tzu Chi Foundation · Malaysia · 2020 – 2024</div>
+          <div class="item-body" data-key="c2d">Active committee member. Responsibilities include organising community events such as welcome parties, leading recyclable material classification drives, community care programmes, home visits, and condolences support to families in need.</div>
+          <div class="tags"><span class="tag">Volunteer</span><span class="tag">Community Care</span><span class="tag">Events</span><span class="tag">Recycling</span></div>
+        </div>
+        <div class="row-item-right">
+          <span class="badge badge-active">Committee</span>
+        </div>
+      </div>
+
+      <!-- ASSA -->
+      <div class="row-item fade-up">
+        <div class="row-item-left">
+          <div class="item-title" data-key="c3n">Actuarial Science Student Association (ASSA)</div>
+          <div class="item-sub" data-key="c3r">Member · UCSI University · Malaysia</div>
+          <div class="item-body" data-key="c3d">Participated in skill training workshops and industry talks from practising actuaries and insurers. Activities bridged academic knowledge with professional practice in the actuarial and insurance industries.</div>
+          <div class="tags"><span class="tag">Actuarial Science</span><span class="tag">Industry Talks</span><span class="tag">Training</span></div>
+        </div>
+        <div class="row-item-right">
+          <span class="item-meta" data-key="c3d2">2020 – 2024</span>
+        </div>
+      </div>
+
+      <button class="add-card-btn" onclick="addClub()">+ Add</button>
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+<script>
+function addClub(){
+  const l=document.getElementById('club-list'),b=l.querySelector('.add-card-btn'),n=l.querySelectorAll('.row-item').length+1,d=document.createElement('div');
+  d.className='row-item';
+  d.innerHTML=`<div class="row-item-left"><div class="item-title" contenteditable="true" data-key="c${n}n">Organisation Name</div><div class="item-sub" contenteditable="true" data-key="c${n}r">Role · Organisation · Location</div><div class="item-body" contenteditable="true" data-key="c${n}d">Description of your involvement.</div></div><div class="row-item-right"><span class="item-meta" contenteditable="true" data-key="c${n}m">Year</span></div>`;
+  l.insertBefore(d,b);
+}
+</script>
+</body>
+</html>

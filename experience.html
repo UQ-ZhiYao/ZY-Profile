@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Experience — Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .ticker {
+      display: inline-block;
+      font-size: 11px; font-weight: 500; color: var(--gray-400);
+      background: var(--gray-100); border: 1px solid var(--border);
+      border-radius: 3px; padding: 1px 5px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .exp-duties {
+      margin-top: 0.5rem; padding-left: 1rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .exp-duties li { font-size: 13px; color: var(--gray-600); line-height: 1.65; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li>
+    <li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li>
+    <li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+
+<div id="edit-toolbar">
+  <span>Edit mode</span>
+  <button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button>
+  <button class="tb-btn tb-save" id="tb-save">Save</button>
+</div>
+
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <h3>Editor Login</h3>
+    <p>Enter password to edit.</p>
+    <p class="modal-error" id="modal-error">Incorrect password.</p>
+    <input type="password" id="password-input" placeholder="Password"/>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1 data-key="pt">Work Experience</h1>
+      <p data-key="ps">Professional roles across Malaysia, Singapore, and Hong Kong.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <div class="timeline" id="exp-list" data-section="exp-list">
+
+        <!-- ZY-Invest -->
+        <div class="timeline-item fade-up">
+          <div class="row-item" style="border-bottom:none; padding-bottom:0; align-items:flex-start;">
+            <div class="row-item-left">
+              <div class="item-title" data-key="x0c">ZY-Invest</div>
+              <div class="item-sub" data-key="x0r">Founder &amp; Fund Manager · Malaysia</div>
+              <ul class="exp-duties" data-key="x0d">
+                <li>Reporting and communicating portfolio performance and updates to investors.</li>
+                <li>Developed an official website to improve transparency and engagement with members.</li>
+                <li>Investment decision making and direct communication with corporate management teams.</li>
+              </ul>
+              <div class="tags" style="margin-top:0.6rem;">
+                <span class="tag">Investment Management</span>
+                <span class="tag">Investor Relations</span>
+                <span class="tag">Decision Making</span>
+              </div>
+            </div>
+            <div class="row-item-right">
+              <span class="item-meta" data-key="x0p">Dec 2021 – Present</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- iFAST -->
+        <div class="timeline-item fade-up">
+          <div class="row-item" style="border-bottom:none; padding-bottom:0; align-items:flex-start;">
+            <div class="row-item-left">
+              <div class="item-title">
+                <span data-key="x1c">iFAST Global Hub AI</span><span class="ticker">SGX: AIY</span>
+              </div>
+              <div class="item-sub" data-key="x1r">ePension Operation Team Member · Kuala Lumpur, Malaysia</div>
+              <ul class="exp-duties" data-key="x1d">
+                <li>Led development and operation of the Hong Kong Government's eMPF platform, collaborating with PCCW (0008.HK) to digitise the pension system.</li>
+                <li>Performed User Acceptance Testing (UAT) — identifying and resolving defects in collaboration with PCCW developers.</li>
+                <li>Collaborated with the director to optimise systematic workflows and automate repetitive operational tasks.</li>
+              </ul>
+              <div class="tags" style="margin-top:0.6rem;">
+                <span class="tag">Fintech</span>
+                <span class="tag">Pension Tech</span>
+                <span class="tag">UAT</span>
+                <span class="tag">eMPF</span>
+                <span class="tag">Process Automation</span>
+              </div>
+            </div>
+            <div class="row-item-right">
+              <span class="item-meta" data-key="x1p">Jan 2024 – Aug 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GrandPine Capital -->
+        <div class="timeline-item fade-up">
+          <div class="row-item" style="border-bottom:none; padding-bottom:0; align-items:flex-start;">
+            <div class="row-item-left">
+              <div class="item-title" data-key="x2c">GrandPine Capital</div>
+              <div class="item-sub" data-key="x2r">Customer Service Specialist · Kuala Lumpur, Malaysia</div>
+              <ul class="exp-duties" data-key="x2d">
+                <li>Guided retail investors in understanding value investing concepts and provided problem-solving support.</li>
+                <li>Developed Excel VBA automation scripts for data mining, filtering, and investment tracking.</li>
+              </ul>
+              <div class="tags" style="margin-top:0.6rem;">
+                <span class="tag">Value Investing</span>
+                <span class="tag">Excel VBA</span>
+                <span class="tag">Client Advisory</span>
+              </div>
+            </div>
+            <div class="row-item-right">
+              <span class="item-meta" data-key="x2p">Sep 2022 – Dec 2022</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kim Gam -->
+        <div class="timeline-item fade-up">
+          <div class="row-item" style="border-bottom:none; padding-bottom:0; align-items:flex-start;">
+            <div class="row-item-left">
+              <div class="item-title" data-key="x3c">Kim Gam Enterprise Pte Ltd</div>
+              <div class="item-sub" data-key="x3r">Manager Assistant (Part-time) · Singapore</div>
+              <ul class="exp-duties" data-key="x3d">
+                <li>Coordinated itineraries and schedules for business appointments.</li>
+                <li>Assisted with cheque collection and basic financial record-keeping.</li>
+                <li>Supported general administrative and operational tasks.</li>
+              </ul>
+              <div class="tags" style="margin-top:0.6rem;">
+                <span class="tag">Administration</span>
+                <span class="tag">Finance Support</span>
+              </div>
+            </div>
+            <div class="row-item-right">
+              <span class="item-meta" data-key="x3p">Dec 2015</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="add-card-btn" id="add-exp-btn" onclick="addExperience()">+ Add Work Experience</button>
+
+      </div><!-- end #exp-list -->
+
+      <hr class="divider"/>
+      <div class="info-box" data-key="otw">Currently seeking flexible part-time work in catering or hospitality in Brisbane / QLD while completing postgraduate studies. Available for immediate start.</div>
+
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+<script>
+function addExperience() {
+  const list = document.getElementById('exp-list');
+  const btn  = document.getElementById('add-exp-btn');
+  const n    = list.querySelectorAll('.timeline-item').length + 1;
+  const item = document.createElement('div');
+  item.className = 'timeline-item';
+  item.innerHTML = `
+    <div class="row-item" style="border-bottom:none; padding-bottom:0; align-items:flex-start;">
+      <div class="row-item-left">
+        <div class="item-title" contenteditable="true" data-key="xn${n}c">Company Name</div>
+        <div class="item-sub"  contenteditable="true" data-key="xn${n}r">Job Title · Location</div>
+        <ul class="exp-duties" contenteditable="true" data-key="xn${n}d">
+          <li>Describe your responsibilities here.</li>
+        </ul>
+      </div>
+      <div class="row-item-right">
+        <span class="item-meta" contenteditable="true" data-key="xn${n}p">Month Year – Month Year</span>
+      </div>
+    </div>`;
+  list.insertBefore(item, btn);
+}
+</script>
+</body>
+</html>

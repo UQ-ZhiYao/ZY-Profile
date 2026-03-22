@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skills — Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .dot  { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    .dot.off { background: var(--gray-200); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li><li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li><li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+<div id="edit-toolbar"><span>Edit mode</span><button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button><button class="tb-btn tb-save" id="tb-save">Save</button></div>
+<div class="modal-overlay" id="auth-modal"><div class="modal"><h3>Editor Login</h3><p>Enter password to edit.</p><p class="modal-error" id="modal-error">Incorrect password.</p><input type="password" id="password-input" placeholder="Password"/><div class="modal-actions"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="submitPassword()">Unlock</button></div></div></div>
+
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1 data-key="pt">Skills</h1>
+      <p data-key="ps">Technical and analytical competencies, organised by category.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- ══════════════════════════════
+           FEATURED: Excel VBA
+      ══════════════════════════════ -->
+      <h2 class="section-heading">Featured: Excel VBA</h2>
+
+      <div class="row-item fade-up" style="align-items:flex-start; flex-direction:column; gap:0.75rem; border-bottom:1px solid var(--border); padding-bottom:1.5rem; margin-bottom:0.5rem;">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div class="item-title" data-key="sk_vba_n">Excel VBA — Automation &amp; Data Processing</div>
+            <div class="item-sub" data-key="sk_vba_s">Hard Skill · Microsoft Office · Scripting</div>
+          </div>
+          <div class="dots">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span>
+          </div>
+        </div>
+        <div class="item-body" data-key="sk_vba_d">Applied at GrandPine Capital to automate data mining, filtering, and investment tracking for management. Also used at iFAST to optimise departmental workflows and reduce manual processing time.</div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-400);margin-bottom:0.4rem;">Capabilities</div>
+          <div class="tags" data-key="sk_vba_c">
+            <span class="tag">Data mining &amp; filtering</span>
+            <span class="tag">Investment tracking</span>
+            <span class="tag">Automated reporting</span>
+            <span class="tag">Process automation</span>
+            <span class="tag">Dashboard building</span>
+            <span class="tag">Workflow optimisation</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- ══════════════════════════════
+           HARD SKILLS
+      ══════════════════════════════ -->
+      <h2 class="section-heading">Hard Skills</h2>
+      <div id="hard-skills-list" data-section="hard-skills-list">
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="hs1n">Mathematical Statistics</div>
+            <div class="item-body" data-key="hs1d">Probability theory, distributions, hypothesis testing, regression — applied throughout actuarial and financial mathematics programmes.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="hs2n">Data Analysis</div>
+            <div class="item-body" data-key="hs2d">Cleaning, transforming, and extracting insights from financial and operational datasets using Excel, VBA, and statistical methods.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="hs3n">Actuarial Modelling</div>
+            <div class="item-body" data-key="hs3d">Life contingencies, loss models, risk theory, and non-life insurance pricing from the BSc Actuarial Science programme.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="hs4n">Financial Mathematics</div>
+            <div class="item-body" data-key="hs4d">Derivatives pricing, stochastic calculus, fixed income, and portfolio optimisation from the MSc Financial Mathematics programme.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="hs5n">UAT &amp; Quality Assurance</div>
+            <div class="item-body" data-key="hs5d">User Acceptance Testing at iFAST — defect identification, bug reporting, and developer collaboration on the eMPF pension platform.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="hs6n">Investment Research</div>
+            <div class="item-body" data-key="hs6d">Fundamental analysis, financial statement reading, equity valuation, and sector research applied through ZY-Invest and GrandPine Capital.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <button class="add-card-btn" id="add-hard-btn" onclick="addHardSkill()">+ Add Hard Skill</button>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- ══════════════════════════════
+           SOFT SKILLS
+      ══════════════════════════════ -->
+      <h2 class="section-heading">Soft Skills</h2>
+      <div id="soft-skills-list" data-section="soft-skills-list">
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ss1n">Adaptability</div>
+            <div class="item-body" data-key="ss1d">Comfortable operating in new environments and roles — from pension operations in Singapore to investment advisory in Malaysia and postgraduate study in Australia.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ss2n">Teamwork &amp; Collaboration</div>
+            <div class="item-body" data-key="ss2d">Worked closely with cross-functional teams at iFAST, including developers, operations staff, and senior management to deliver the eMPF platform.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ss3n">Time Management</div>
+            <div class="item-body" data-key="ss3d">Managing postgraduate coursework, personal investment activities (ZY-Invest), and community commitments simultaneously while maintaining priorities.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <div class="row-item fade-up">
+          <div class="row-item-left">
+            <div class="item-title" data-key="ss4n">Communication</div>
+            <div class="item-body" data-key="ss4d">Client-facing advisory at GrandPine Capital — explaining complex investment concepts clearly to retail investors with varying levels of financial literacy.</div>
+          </div>
+          <div class="row-item-right">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span></div>
+          </div>
+        </div>
+
+        <button class="add-card-btn" id="add-soft-btn" onclick="addSoftSkill()">+ Add Soft Skill</button>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+<script>
+function addHardSkill() {
+  const list = document.getElementById('hard-skills-list');
+  const btn  = document.getElementById('add-hard-btn');
+  const n    = 'h' + (list.querySelectorAll('.row-item').length + 1);
+  const item = document.createElement('div');
+  item.className = 'row-item';
+  item.innerHTML = `
+    <div class="row-item-left">
+      <div class="item-title" contenteditable="true" data-key="hs${n}n">Skill Name</div>
+      <div class="item-body"  contenteditable="true" data-key="hs${n}d">Describe this skill and how you have applied it.</div>
+    </div>
+    <div class="row-item-right">
+      <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span><span class="dot off"></span></div>
+    </div>`;
+  list.insertBefore(item, btn);
+}
+
+function addSoftSkill() {
+  const list = document.getElementById('soft-skills-list');
+  const btn  = document.getElementById('add-soft-btn');
+  const n    = 's' + (list.querySelectorAll('.row-item').length + 1);
+  const item = document.createElement('div');
+  item.className = 'row-item';
+  item.innerHTML = `
+    <div class="row-item-left">
+      <div class="item-title" contenteditable="true" data-key="ss${n}n">Skill Name</div>
+      <div class="item-body"  contenteditable="true" data-key="ss${n}d">Describe this skill and how you demonstrate it.</div>
+    </div>
+    <div class="row-item-right">
+      <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot off"></span><span class="dot off"></span></div>
+    </div>`;
+  list.insertBefore(item, btn);
+}
+</script>
+</body>
+</html>

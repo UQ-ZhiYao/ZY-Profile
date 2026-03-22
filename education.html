@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Education — Ng Zhi Yao</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .module-grid { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+    .module { font-size: 12px; background: var(--gray-100); color: var(--gray-600); padding: 2px 8px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">NG ZHI YAO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="clubs.html">Clubs</a></li>
+    <li><a href="education.html">Education</a></li><li><a href="investment.html">Investment</a></li>
+    <li><a href="experience.html">Experience</a></li><li><a href="skills.html">Skills</a></li>
+    <li><a href="certificates.html">Certificates</a></li>
+  </ul>
+  <button class="nav-edit-btn" id="nav-edit-btn">Edit</button>
+</nav>
+<div id="edit-toolbar"><span>Edit mode</span><button class="tb-btn tb-cancel" id="tb-cancel">Cancel</button><button class="tb-btn tb-save" id="tb-save">Save</button></div>
+<div class="modal-overlay" id="auth-modal"><div class="modal"><h3>Editor Login</h3><p>Enter password to edit.</p><p class="modal-error" id="modal-error">Incorrect password.</p><input type="password" id="password-input" placeholder="Password"/><div class="modal-actions"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="submitPassword()">Unlock</button></div></div></div>
+
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1 data-key="pt">Education</h1>
+      <p data-key="ps">Academic qualifications and programme details.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container" id="edu-list" data-section="edu-list">
+
+      <div class="row-item fade-up" style="align-items:flex-start;">
+        <div class="row-item-left">
+          <div class="item-title" data-key="e1d">Master of Science in Financial Mathematics</div>
+          <div class="item-sub" data-key="e1s">University of Queensland · St Lucia, QLD, Australia</div>
+          <div class="item-body" style="margin-top:0.4rem;" data-key="e1o">The programme provides rigorous training in the mathematical techniques underpinning modern finance, including stochastic calculus, derivatives pricing, risk management, computational finance, and quantitative methods.</div>
+          <div class="module-grid" data-key="e1m">
+            <span class="module">Stochastic Calculus</span><span class="module">Financial Derivatives</span>
+            <span class="module">Risk Management</span><span class="module">Computational Finance</span>
+            <span class="module">Time Series Analysis</span><span class="module">Portfolio Theory</span>
+            <span class="module">Numerical Methods</span><span class="module">Mathematical Modelling</span>
+          </div>
+        </div>
+        <div class="row-item-right" style="text-align:right;">
+          <div class="item-meta" data-key="e1p">2025 – Present</div>
+          <div style="margin-top:0.4rem;"><span class="badge badge-active">Current</span></div>
+        </div>
+      </div>
+
+      <div class="row-item fade-up" style="align-items:flex-start;">
+        <div class="row-item-left">
+          <div class="item-title" data-key="e2d">Bachelor of Science (Hons) in Actuarial Science</div>
+          <div class="item-sub" data-key="e2s">UCSI University · Kuala Lumpur, Malaysia</div>
+          <div class="item-body" style="margin-top:0.4rem;" data-key="e2o">A four-year honours programme covering probability theory, statistics, life contingencies, financial mathematics, and risk modelling. Provides the foundation for actuarial professional examinations and careers in insurance, pensions, and finance.</div>
+          <div class="module-grid" data-key="e2m">
+            <span class="module">Life Contingencies</span><span class="module">Probability &amp; Statistics</span>
+            <span class="module">Financial Mathematics</span><span class="module">Risk Theory</span>
+            <span class="module">Regression Analysis</span><span class="module">Loss Models</span>
+            <span class="module">Non-Life Insurance</span><span class="module">Corporate Finance</span>
+          </div>
+        </div>
+        <div class="row-item-right" style="text-align:right;">
+          <div class="item-meta" data-key="e2p">2020 – 2024</div>
+          <div style="margin-top:0.3rem;"><span class="item-meta" data-key="e2g">Second Class Honours</span></div>
+        </div>
+      </div>
+
+      <div class="row-item fade-up" style="align-items:flex-start;">
+        <div class="row-item-left">
+          <div class="item-title" data-key="e3d">Cambridge A-Levels</div>
+          <div class="item-sub" data-key="e3s">Cambridge International Examinations</div>
+          <div class="item-body" style="margin-top:0.4rem;" data-key="e3o">Completed Cambridge A-Level studies covering Mathematics, Further Mathematics, Accounting, and Computer Science.</div>
+          <div class="module-grid" data-key="e3m">
+            <span class="module">Mathematics</span>
+            <span class="module">Further Mathematics</span>
+            <span class="module">Accounting</span>
+            <span class="module">Computer Science</span>
+          </div>
+        </div>
+        <div class="row-item-right" style="text-align:right;">
+          <div class="item-meta" data-key="e3p">2019 – 2020</div>
+        </div>
+      </div>
+
+      <button class="add-card-btn" id="add-edu-btn" onclick="addEducation()">+ Add Education</button>
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 Ng Zhi Yao · St Lucia, Queensland, Australia</footer>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+<script>
+function addEducation() {
+  const list = document.getElementById('edu-list');
+  const btn  = document.getElementById('add-edu-btn');
+  const n    = list.querySelectorAll('.row-item').length + 1;
+  const item = document.createElement('div');
+  item.className = 'row-item';
+  item.innerHTML = `
+    <div class="row-item-left">
+      <div class="item-title" contenteditable="true" data-key="e${n}d">Degree Title</div>
+      <div class="item-sub"  contenteditable="true" data-key="e${n}s">Institution · Location</div>
+      <div class="item-body" style="margin-top:0.4rem;" contenteditable="true" data-key="e${n}o">Programme description.</div>
+    </div>
+    <div class="row-item-right" style="text-align:right;">
+      <div class="item-meta" contenteditable="true" data-key="e${n}p">Year – Year</div>
+    </div>`;
+  list.insertBefore(item, btn);
+}
+</script>
+</body>
+</html>
