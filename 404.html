@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><title>Redirecting…</title><meta name="robots" content="noindex"/>
+<script>
+  // Old page links (e.g. /clubs.html) now live inside the members app.
+  var p = location.pathname.replace(/^\/+|\/+$/g, "").replace(/\.html$/, "");
+  var known = ["index", "clubs", "education", "investment", "experience", "skills", "certificates"];
+  location.replace("/" + (p && p !== "index" && known.indexOf(p) > -1 ? "#/" + p : (p ? "#/" + encodeURIComponent(p) : "")));
+</script></head>
+<body><p>Redirecting to <a href="/">zy-profile.com</a>…</p></body></html>

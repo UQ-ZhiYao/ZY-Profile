@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ng Zhi Yao — Members</title>
+  <meta name="description" content="Ng Zhi Yao — members-only profile covering education, experience, investment activities, skills and certificates."/>
+  <link rel="canonical" href="https://zy-profile.com/"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231e3a5f'/><text x='16' y='21' font-family='Arial' font-weight='700' font-size='13' fill='white' text-anchor='middle'>ZY</text></svg>"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="boot" class="boot"><div class="spinner"></div></div>
+
+<!-- Sign-in gate -->
+<section id="gate" class="gate" hidden>
+  <div class="gate-card">
+    <div class="gate-brand">
+      <img id="gateLogo" class="gate-logo" alt="" hidden/>
+      <div>
+        <div id="gateName" class="gate-name">Ng Zhi Yao</div>
+        <div class="gate-kicker">Members area</div>
+      </div>
+    </div>
+    <p id="gateTagline" class="gate-tagline"></p>
+
+    <form id="signinForm" class="form" autocomplete="on">
+      <label>Username<input name="username" required autocomplete="username" autocapitalize="none" spellcheck="false"/></label>
+      <label>Password<input name="password" type="password" required autocomplete="current-password"/></label>
+      <label class="check"><input type="checkbox" name="remember"/> Keep me signed in on this device</label>
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+      <div class="gate-links">
+        <a href="#" id="requestLink" hidden>Request access</a>
+        <span class="form-hint">Forgot your password? Contact the site owner.</span>
+      </div>
+    </form>
+
+    <div id="gateMsg" class="form-msg" role="status" aria-live="polite"></div>
+  </div>
+  <footer class="gate-footer" id="gateFooter"></footer>
+</section>
+
+<!-- Member site -->
+<div id="site" hidden>
+  <nav>
+    <a href="#/" class="nav-logo" id="navLogo"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <ul class="nav-links" id="navLinks"></ul>
+    <div class="nav-actions">
+      <button class="nav-download-btn" id="resumeBtn" hidden type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Resume
+      </button>
+      <button class="nav-ghost-btn" data-action="signout" type="button" title="Sign out">Sign out</button>
+    </div>
+  </nav>
+  <main id="main"></main>
+  <footer id="footer"></footer>
+</div>
+
+<script src="crypto.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
