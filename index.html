@@ -6,11 +6,11 @@
   <title>Ng Zhi Yao</title>
   <meta name="description" content="Ng Zhi Yao — financial mathematics, actuarial science and investing. Works, hobbies and stories."/>
   <link rel="canonical" href="https://zy-profile.com/"/>
-  <meta name="theme-color" content="#fbfaf7"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f1b2d'/><text x='16' y='21.5' font-family='Georgia,serif' font-weight='700' font-size='14' fill='white' text-anchor='middle'>ZY</text></svg>"/>
+  <meta name="theme-color" content="#ffffff"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23d6132a'/><text x='16' y='21' font-family='Arial,sans-serif' font-weight='800' font-size='13' fill='white' text-anchor='middle'>ZY</text></svg>"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -19,14 +19,16 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <a href="#/" class="brand" id="brand" aria-label="Home"></a>
-    <nav class="nav" aria-label="Main">
-      <ul id="navCats" class="nav-cats"></ul>
-    </nav>
-    <div class="top-actions">
-      <button class="btn btn-ghost btn-sm" id="resumeBtn" type="button" hidden></button>
-      <button class="btn btn-outline btn-sm" id="authBtn" type="button">Member sign in</button>
-      <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">
+    <div class="nav-pill">
+      <a href="#/" class="brand" id="brand" aria-label="Home"></a>
+      <nav class="nav" aria-label="Main">
+        <ul id="navCats" class="nav-cats"></ul>
+      </nav>
+      <button class="btn btn-red btn-sm" id="authBtn" type="button">Member sign in</button>
+    </div>
+    <div class="side-pill">
+      <button class="pill-btn" id="resumeBtn" type="button" hidden></button>
+      <button class="pill-btn menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
       </button>
     </div>
@@ -60,6 +62,8 @@
 </div>
 
 <script src="crypto.js"></script>
-<script src="app.js"></script>
+<script src="globe-data.js" defer></script>
+<script src="globe.js" defer></script>
+<script src="app.js" defer></script>
 </body>
 </html>
