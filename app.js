@@ -233,7 +233,7 @@ function render() {
     if (!state.signedIn && anyLocked && $("#signin").hidden) setTimeout(() => openSignIn(location.hash), 0);
   }
   main.innerHTML = html;
-  wireLogos(main); wireRequest(); wireSliders(main); wireReveal(main); mountGlobe(main);
+  wireLogos(main); wireRequest(); wireSliders(main); wireReveal(main); mountGlobe(main); mountPixels(main);
   window.scrollTo(0, 0);
 }
 function setTitle(t) { const n = state.site.name || "Ng Zhi Yao"; document.title = t ? `${t} — ${n}` : n; }
@@ -255,13 +255,62 @@ const ICONS = {
   travel: svg('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>'),
   page: svg('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/>'),
 };
-function iconFor(t) {
+function iconKey(t) {
   const s = `${t.id} ${t.title}`.toLowerCase();
   const rules = [["educat|degree|study|school", "education"], ["experien|work|career|job", "experience"], ["skill", "skills"], ["certif|licen", "certificates"],
     ["club|associat|member|volunt", "clubs"], ["invest|portfolio|fund|stock|equit", "investment"], ["coin|numism|collect", "coin"],
     ["letter|update|sharehold|news", "letter"], ["travel|trip|diary", "travel"], ["story|stories|journal|blog|note", "story"]];
-  for (const [re, k] of rules) if (new RegExp(re).test(s)) return ICONS[k];
-  return ICONS.page;
+  for (const [re, k] of rules) if (new RegExp(re).test(s)) return k;
+  return "page";
+}
+const iconFor = (t) => ICONS[iconKey(t)] || ICONS.page;
+
+// Zetrix-style split section: heading + card grid on the left, live pixel animation on the right.
+function miniCard(i, tab) {
+  const logo = logoSrc(i);
+  const desc = i.subtitle || i.body || (i.bullets || [])[0] || "";
+  const badge = i.badge?.text ? `<span class="badge badge-${esc(i.badge.tone || "neutral")}">${esc(i.badge.text)}</span>` : "";
+  return `<a class="mini" href="#/${esc(tab.id)}">
+    <span class="mini-top">
+      ${logo ? `<span class="mini-icon item-logo"><img src="${esc(logo.src)}" alt="" loading="lazy" ${logo.auto ? 'data-auto="1"' : ""}/></span>` : `<span class="mini-icon">${iconFor(tab)}</span>`}
+      <span class="mini-go">${I.upRight}</span>
+    </span>
+    <span class="mini-title">${esc(i.title)}</span>
+    ${desc ? `<span class="mini-desc">${esc(desc)}</span>` : ""}
+    ${i.meta || badge ? `<span class="mini-foot">${i.meta ? `<span class="mono">${esc(i.meta)}</span>` : "<span></span>"}${badge}</span>` : ""}
+  </a>`;
+}
+const MAX_MINI = 6;
+function splitSection(tab, cat, idx) {
+  const items = tab.items || [];
+  if (!items.length) return "";
+  const shown = items.slice(0, MAX_MINI);
+  const more = items.length - shown.length;
+  return `<section class="split-band${idx % 2 ? " alt" : ""}" id="s-${esc(tab.id)}">
+    <span class="plus tl" aria-hidden="true">+</span><span class="plus bl" aria-hidden="true">+</span>
+    <div class="container split">
+      <div class="split-left">
+        <p class="kicker">Fig. ${figNo(tab)} — ${esc(cat ? cat.name : "Profile")}</p>
+        <h2 class="h2">${esc(tab.heading || tab.title)}</h2>
+        ${tab.intro ? `<p class="lead-p">${esc(tab.intro)}</p>` : ""}
+        <div class="mini-grid">${shown.map((i) => miniCard(i, tab)).join("")}
+          ${more > 0 ? `<a class="mini mini-more" href="#/${esc(tab.id)}"><span class="mini-more-num">+${more}</span><span class="mini-title">More in ${esc(tab.title)}</span><span class="mini-go">${I.upRight}</span></a>` : ""}
+        </div>
+        <a class="split-link" href="#/${esc(tab.id)}">Open ${esc(tab.title)} ${I.arrow}</a>
+      </div>
+      <div class="split-right" aria-hidden="true">
+        <canvas class="pixel-art" data-icon="${esc(iconKey(tab))}"></canvas>
+        <span class="mono split-cap">Fig. ${figNo(tab)} — ${esc(tab.title)}, ${items.length} item${items.length === 1 ? "" : "s"}</span>
+      </div>
+    </div>
+  </section>`;
+}
+let pixelStops = [];
+function mountPixels(root) {
+  pixelStops.forEach((f) => f()); pixelStops = [];
+  if (!window.ZYPixel) return;
+  const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#d6132a";
+  $$("canvas.pixel-art", root).forEach((cv, k) => pixelStops.push(window.ZYPixel(cv, cv.dataset.icon, accent, k + 3)));
 }
 const crumbs = (parts) => `<nav class="crumbs mono" aria-label="Breadcrumb"><a href="#/">Home</a>${parts.map((p) => `<span>/</span>${p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : `<span class="here">${esc(p.label)}</span>`}`).join("")}</nav>`;
 const figNo = (tab) => { const i = allTabs().filter((t) => t.layout !== "home").sort((a, b) => catIndex(a) - catIndex(b) || byOrder(a, b)).indexOf(tab); return pad(i + 2); };
@@ -379,8 +428,10 @@ function renderHome(tab) {
     </a>`;
   }).join("");
 
-  const sliders = state.categories.map((c) => (c.locked && !state.signedIn) ? "" : tabsIn(c.id).map((t) => sliderSection(t, c)).join("")).join("")
-    + topLevel().map((t) => sliderSection(t, null)).join("");
+  const sectionTabs = [];
+  state.categories.forEach((c) => { if (!(c.locked && !state.signedIn)) tabsIn(c.id).forEach((t) => sectionTabs.push([t, c])); });
+  topLevel().forEach((t) => sectionTabs.push([t, null]));
+  const sliders = sectionTabs.filter(([t]) => (t.items || []).length).map(([t, c], k) => splitSection(t, c, k)).join("");
 
   const lockedCat = state.categories.find((c) => c.locked);
   const cta = lockedCat ? `<section class="band band-plain"><div class="container"><div class="cta">
