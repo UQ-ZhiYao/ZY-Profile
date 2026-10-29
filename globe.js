@@ -10,7 +10,7 @@ window.ZYGlobe = function (canvas, opts) {
   const data = window.ZY_GLOBE; if (!data || !canvas.getContext) return () => {};
   const ctx = canvas.getContext("2d");
   const pins = (opts.pins || []).filter((p) => Number.isFinite(+p.lat) && Number.isFinite(+p.lon)).map((p) => ({ label: p.label || "", lat: +p.lat, lon: +p.lon }));
-  const accent = opts.accent || "#d6132a";
+  const accent = opts.accent || "#2563eb";
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const avgLon = pins.length ? pins.reduce((s, p) => s + p.lon, 0) / pins.length : 115;
   const avgLat = pins.length ? pins.reduce((s, p) => s + p.lat, 0) / pins.length : 5;

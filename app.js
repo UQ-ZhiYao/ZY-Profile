@@ -70,7 +70,8 @@ function unlock(content) {
 // ── Branding ──
 function applyBranding() {
   const s = state.site;
-  if ((s.version || 0) >= 3 && s.accent && /^#[0-9a-f]{6}$/i.test(s.accent)) document.documentElement.style.setProperty("--accent", s.accent);
+  const legacyDefaults = ["#d6132a", "#1e3a5f", "#3967ac"];
+  if ((s.version || 0) >= 3 && s.accent && /^#[0-9a-f]{6}$/i.test(s.accent) && !legacyDefaults.includes(s.accent.toLowerCase())) document.documentElement.style.setProperty("--accent", s.accent);
   const logo = safeImg(s.logo);
   $("#brand").innerHTML = (logo ? `<img src="${esc(logo)}" alt="" class="brand-logo"/>` : `<span class="brand-mark">${esc(s.monogram || (s.name || "Zhi Yao").trim().split(/\s+/).slice(-2).map((w) => w[0]).join("").toUpperCase())}</span>`)
     + `<span class="brand-text">${esc(s.logoText || s.name || "NG ZHI YAO")}</span>`;
@@ -271,47 +272,84 @@ function miniCard(i, tab) {
   const desc = i.subtitle || i.body || (i.bullets || [])[0] || "";
   const badge = i.badge?.text ? `<span class="badge badge-${esc(i.badge.tone || "neutral")}">${esc(i.badge.text)}</span>` : "";
   return `<a class="mini" href="#/${esc(tab.id)}">
-    <span class="mini-top">
-      ${logo ? `<span class="mini-icon item-logo"><img src="${esc(logo.src)}" alt="" loading="lazy" ${logo.auto ? 'data-auto="1"' : ""}/></span>` : `<span class="mini-icon">${iconFor(tab)}</span>`}
-      <span class="mini-go">${I.upRight}</span>
+    ${logo ? `<span class="mini-icon item-logo"><img src="${esc(logo.src)}" alt="" loading="lazy" ${logo.auto ? 'data-auto="1"' : ""}/></span>` : `<span class="mini-icon">${iconFor(tab)}</span>`}
+    <span class="mini-text">
+      <span class="mini-title">${esc(i.title)}</span>
+      ${desc ? `<span class="mini-desc">${esc(desc)}</span>` : ""}
+      ${i.meta || badge ? `<span class="mini-foot">${i.meta ? `<span class="mono">${esc(i.meta)}</span>` : ""}${badge}</span>` : ""}
     </span>
-    <span class="mini-title">${esc(i.title)}</span>
-    ${desc ? `<span class="mini-desc">${esc(desc)}</span>` : ""}
-    ${i.meta || badge ? `<span class="mini-foot">${i.meta ? `<span class="mono">${esc(i.meta)}</span>` : "<span></span>"}${badge}</span>` : ""}
+    <span class="mini-go">${I.upRight}</span>
   </a>`;
 }
 const MAX_MINI = 6;
-function splitSection(tab, cat, idx) {
+const SECTION_COLORS = ["#2563eb", "#0891b2", "#4f46e5", "#0284c7", "#1d4ed8", "#0e7490", "#6366f1", "#0ea5e9"];
+function storyBlock(tab, cat, k, color) {
   const items = tab.items || [];
-  if (!items.length) return "";
-  const shown = items.slice(0, MAX_MINI);
-  const more = items.length - shown.length;
-  return `<section class="split-band${idx % 2 ? " alt" : ""}" id="s-${esc(tab.id)}">
-    <span class="plus tl" aria-hidden="true">+</span><span class="plus bl" aria-hidden="true">+</span>
-    <div class="container split">
-      <div class="split-left">
-        <p class="kicker">Fig. ${figNo(tab)} — ${esc(cat ? cat.name : "Profile")}</p>
-        <h2 class="h2">${esc(tab.heading || tab.title)}</h2>
-        ${tab.intro ? `<p class="lead-p">${esc(tab.intro)}</p>` : ""}
-        <div class="mini-grid">${shown.map((i) => miniCard(i, tab)).join("")}
-          ${more > 0 ? `<a class="mini mini-more" href="#/${esc(tab.id)}"><span class="mini-more-num">+${more}</span><span class="mini-title">More in ${esc(tab.title)}</span><span class="mini-go">${I.upRight}</span></a>` : ""}
+  const shown = items.slice(0, MAX_MINI), more = items.length - shown.length;
+  return `<section class="story-block" id="s-${esc(tab.id)}" data-k="${k}" data-icon="${esc(iconKey(tab))}" data-color="${color}" data-title="${esc(tab.title)}" data-fig="Fig. ${figNo(tab)} — ${esc(cat ? cat.name : "Profile")}" style="--sec:${color}">
+    <span class="plus" aria-hidden="true">+</span>
+    <p class="kicker">Fig. ${figNo(tab)} — ${esc(cat ? cat.name : "Profile")}</p>
+    <h2 class="h2">${esc(tab.heading || tab.title)}</h2>
+    ${tab.intro ? `<p class="lead-p">${esc(tab.intro)}</p>` : ""}
+    <div class="mini-grid">${shown.map((i) => miniCard(i, tab)).join("")}
+      ${more > 0 ? `<a class="mini mini-more" href="#/${esc(tab.id)}"><span class="mini-more-num">+${more}</span><span class="mini-text"><span class="mini-title">More in ${esc(tab.title)}</span></span><span class="mini-go">${I.upRight}</span></a>` : ""}
+    </div>
+    <a class="split-link" href="#/${esc(tab.id)}">Open ${esc(tab.title)} ${I.arrow}</a>
+  </section>`;
+}
+function scrollySection(list) {
+  if (!list.length) return "";
+  const n = list.length;
+  const blocks = list.map(([t, c], k) => storyBlock(t, c, k, SECTION_COLORS[k % SECTION_COLORS.length])).join("");
+  const first = list[0][0];
+  return `<section class="scrolly">
+    <div class="container scrolly-grid">
+      <div class="scrolly-left">${blocks}</div>
+      <aside class="stage" style="--sec:${SECTION_COLORS[0]}">
+        <canvas class="stage-canvas" aria-hidden="true"></canvas>
+        <div class="stage-cap">
+          <span class="stage-count mono"><b>01</b> / ${pad(n)}</span>
+          <span class="stage-fig mono">Fig. ${figNo(first)} — ${esc(first.title)}</span>
+          <span class="stage-dots">${list.map(([t], k) => `<button class="stage-dot${k ? "" : " on"}" data-go="${k}" aria-label="Go to ${esc(t.title)}" title="${esc(t.title)}"></button>`).join("")}</span>
         </div>
-        <a class="split-link" href="#/${esc(tab.id)}">Open ${esc(tab.title)} ${I.arrow}</a>
-      </div>
-      <div class="split-right" aria-hidden="true">
-        <canvas class="pixel-art" data-icon="${esc(iconKey(tab))}"></canvas>
-        <span class="mono split-cap">Fig. ${figNo(tab)} — ${esc(tab.title)}, ${items.length} item${items.length === 1 ? "" : "s"}</span>
-      </div>
+      </aside>
     </div>
   </section>`;
 }
-let pixelStops = [];
+let stageStop = null, stageScroll = null;
 function mountPixels(root) {
-  pixelStops.forEach((f) => f()); pixelStops = [];
-  if (!window.ZYPixel) return;
-  const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#d6132a";
-  $$("canvas.pixel-art", root).forEach((cv, k) => pixelStops.push(window.ZYPixel(cv, cv.dataset.icon, accent, k + 3)));
+  if (stageStop) { stageStop(); stageStop = null; }
+  if (stageScroll) { window.removeEventListener("scroll", stageScroll); stageScroll = null; }
+  const blocks = $$(".story-block", root), stage = $(".stage", root);
+  if (!blocks.length || !stage || !window.ZYStage) return;
+  const progress = () => {
+    const mid = innerHeight * 0.5; let idx = 0;
+    blocks.forEach((b, k) => { if (b.getBoundingClientRect().top <= mid) idx = k; });
+    const next = blocks[idx + 1]; if (!next) return idx;
+    const top = blocks[idx].getBoundingClientRect().top, span = next.getBoundingClientRect().top - top;
+    const into = (mid - top) / Math.max(1, span);
+    return idx + Math.max(0, Math.min(1, (into - 0.5) / 0.5));    // hold the shape, then morph in the second half
+  };
+  const shapes = blocks.map((b, k) => ({ formation: k, color: b.dataset.color }));
+  stageStop = window.ZYStage($(".stage-canvas", stage), shapes, progress);
+  let cur = -1, ticking = false;
+  const update = () => {
+    ticking = false;
+    const k = Math.min(blocks.length - 1, Math.round(progress())); if (k === cur) return; cur = k;
+    const b = blocks[k];
+    stage.style.setProperty("--sec", b.dataset.color);
+    $(".stage-fig", stage).textContent = b.dataset.fig.replace(/ — .*/, "") + " — " + b.dataset.title;
+    $(".stage-count b", stage).textContent = pad(k + 1);
+    const ff = $(".stage-fig", stage); ff.classList.remove("swap"); void ff.offsetWidth; ff.classList.add("swap");
+    $$(".stage-dot", stage).forEach((d, j) => d.classList.toggle("on", j === k));
+    blocks.forEach((x, j) => x.classList.toggle("is-active", j === k));
+  };
+  stageScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  window.addEventListener("scroll", stageScroll, { passive: true });
+  stage.addEventListener("click", (e) => { const d = e.target.closest("[data-go]"); if (d) blocks[+d.dataset.go].scrollIntoView({ behavior: "smooth", block: "start" }); });
+  update();
 }
+
 const crumbs = (parts) => `<nav class="crumbs mono" aria-label="Breadcrumb"><a href="#/">Home</a>${parts.map((p) => `<span>/</span>${p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : `<span class="here">${esc(p.label)}</span>`}`).join("")}</nav>`;
 const figNo = (tab) => { const i = allTabs().filter((t) => t.layout !== "home").sort((a, b) => catIndex(a) - catIndex(b) || byOrder(a, b)).indexOf(tab); return pad(i + 2); };
 const catIndex = (t) => { const i = state.categories.findIndex((c) => c.id === t.category); return i < 0 ? 99 : i; };
@@ -396,7 +434,7 @@ function mountGlobe(root) {
   const cv = $("#globe", root); if (!cv || !window.ZYGlobe) return;
   const h = homeTab()?.home || {};
   const pins = Array.isArray(h.pins) && h.pins.length ? h.pins : DEFAULT_PINS;
-  globeStop = window.ZYGlobe(cv, { pins, accent: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#d6132a" });
+  globeStop = window.ZYGlobe(cv, { pins, accent: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb" });
 }
 const ART = ["art-a", "art-b", "art-c", "art-d"];
 
@@ -431,7 +469,7 @@ function renderHome(tab) {
   const sectionTabs = [];
   state.categories.forEach((c) => { if (!(c.locked && !state.signedIn)) tabsIn(c.id).forEach((t) => sectionTabs.push([t, c])); });
   topLevel().forEach((t) => sectionTabs.push([t, null]));
-  const sliders = sectionTabs.filter(([t]) => (t.items || []).length).map(([t, c], k) => splitSection(t, c, k)).join("");
+  const sliders = scrollySection(sectionTabs.filter(([t]) => (t.items || []).length));
 
   const lockedCat = state.categories.find((c) => c.locked);
   const cta = lockedCat ? `<section class="band band-plain"><div class="container"><div class="cta">

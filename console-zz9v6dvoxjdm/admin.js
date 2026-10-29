@@ -64,8 +64,19 @@ function migrate(V) {
         summary: "Notes, letters and updates", summaryTags: [], note: "", sections: [], items: [] });
     }
   }
+  if (V.version < 3) {
+    V.version = 3; touched = true;
+    V.public.accent = "#d6132a";
+    const home = V.content.tabs.find((t) => t.layout === "home");
+    if (home) { home.home ||= {}; if (!Array.isArray(home.home.pins) || !home.home.pins.length) home.home.pins = clone(DEFAULT_PINS); }
+  }
+  if (V.version < 4) {
+    V.version = 4; touched = true;
+    if (["#d6132a", "#1e3a5f", "#3967ac", ""].includes(String(V.public.accent || "").toLowerCase())) V.public.accent = "#2563eb";
+  }
   return touched;
 }
+const DEFAULT_PINS = [{ label: "Singapore", lat: "1.352", lon: "103.82" }, { label: "Kuala Lumpur", lat: "3.139", lon: "101.687" }, { label: "Brisbane", lat: "-27.47", lon: "153.03" }];
 // ─────────────────────────── UI helpers ───────────────────────────
 function toast(msg, kind = "") {
   const t = Object.assign(document.createElement("div"), { className: "toast " + kind, textContent: msg });
@@ -289,7 +300,7 @@ const resumePublic = () => !!S.V.content.resume && S.V.content.resumeAccess === 
 function publicBuild() {
   const lockedCount = {};
   visibleTabs().filter(isLocked).forEach((t) => (lockedCount[t.category] = (lockedCount[t.category] || 0) + 1));
-  return { ...S.V.public, version: 2, updated: new Date().toISOString(), categories: cats(),
+  return { ...S.V.public, version: 3, updated: new Date().toISOString(), categories: cats(),
     tabs: visibleTabs().filter((t) => !isLocked(t)).map(cleanTab), lockedCount,
     resume: resumePublic() ? S.V.content.resume : null, membersResume: !!S.V.content.resume && !resumePublic() };
 }
@@ -380,7 +391,7 @@ function siteView(v) {
       <div class="span2" id="logoSlot"></div>
       <div class="span2">${field("Sign-in message", textarea("tagline", s.tagline, 2, 'maxlength="300"'), "Shown when a visitor opens a members-only page.")}</div>
       ${field("Footer text", input("footer", s.footer, 'maxlength="160"'))}
-      ${field("Accent colour", `<input name="accent" type="color" value="${esc(/^#[0-9a-f]{6}$/i.test(s.accent || "") ? s.accent : "#1e3a5f")}"/>`)}
+      ${field("Brand colour", `<input name="accent" type="color" value="${esc(/^#[0-9a-f]{6}$/i.test(s.accent || "") ? s.accent : "#2563eb")}"/>`, "Buttons, glow, highlights. Tech blue by default.")}
       <div class="span2">${field("“Request access” email (optional)", input("requestEmail", s.requestEmail, 'type="email" placeholder="you@example.com"'), "If set, the sign-in page shows a Request access link that opens an email to this address. It will be visible publicly.")}</div>
     </form>
     <section class="panel">
@@ -486,10 +497,13 @@ function tabView(v, tabId) {
     <form class="panel grid2" id="homeForm" onsubmit="return false">
       <h2 class="span2">Hero</h2>
       ${field("Name", input("name", h.name))}
+      ${field("Big headline (optional)", input("headline", h.headline, 'maxlength="80" placeholder="Leave empty to show your name"'), "The large centred text at the top.")}
       <div id="photoSlot"></div>
       <div class="span2">${field("Title lines", textarea("titleLines", h.titleLines, 2), "One line per row.")}</div>
       <div class="span2">${field("Bio", textarea("bio", h.bio, 4))}</div>
       <div class="span2" id="buttonsSlot"></div>
+      <h2 class="span2">Globe</h2>
+      <div class="span2" id="pinsSlot"></div>
       <h2 class="span2">Contact card</h2>
       ${field("Card title", input("contactTitle", h.contactTitle))}
       ${field("Card subtitle", input("contactSub", h.contactSub))}
@@ -530,10 +544,13 @@ function tabView(v, tabId) {
       photo: imageField({ label: "Photo (optional)", value: h.photo, max: 320 }),
       buttons: rowsEditor({ label: "Buttons", rows: h.buttons || [], addText: "Add button", fields: [{ key: "label", label: "Label" }, { key: "target", label: "Links to", type: "select", options: tabOpts }, { key: "style", label: "Style", type: "select", options: () => [["primary", "Solid"], ["outline", "Outline"]] }] }),
       contact: rowsEditor({ label: "Contact rows", rows: h.contact || [], addText: "Add row", fields: [{ key: "label", label: "Label" }, { key: "value", label: "Value", flex: 2 }] }),
+      pins: rowsEditor({ label: "Globe pins (places on the spinning globe, joined by arcs in this order)", rows: h.pins || DEFAULT_PINS, addText: "Add place",
+        hint: "Latitude/longitude: search “<city> coordinates”. South and West are negative.",
+        fields: [{ key: "label", label: "Place name", flex: 2 }, { key: "lat", label: "Latitude" }, { key: "lon", label: "Longitude" }] }),
       stats: rowsEditor({ label: "Stats strip", rows: h.stats || [], addText: "Add stat", fields: [{ key: "num", label: "Number" }, { key: "label", label: "Label", flex: 2 }] }),
     };
     $("#photoSlot", v).append(home.photo); $("#buttonsSlot", v).append(home.buttons);
-    $("#contactSlot", v).append(home.contact); $("#statsSlot", v).append(home.stats);
+    $("#contactSlot", v).append(home.contact); $("#statsSlot", v).append(home.stats); $("#pinsSlot", v).append(home.pins);
   }
 
   $("#saveTab", v).addEventListener("click", () => {
@@ -547,7 +564,10 @@ function tabView(v, tabId) {
       });
     } else {
       const hf = home.form;
-      data.home = { name: hf.name.value.trim(), photo: home.photo.getValue(), titleLines: hf.titleLines.value.trim(), bio: hf.bio.value.trim(),
+      const pins = home.pins.getValue().filter((p) => p.label.trim() || p.lat || p.lon);
+      const badPin = pins.find((p) => !(Math.abs(Number(p.lat)) <= 90 && Math.abs(Number(p.lon)) <= 180 && p.lat !== "" && p.lon !== ""));
+      if (badPin) return toast(`Check the coordinates for “${badPin.label || "a place"}”: latitude −90…90, longitude −180…180.`, "err");
+      data.home = { headline: hf.headline.value.trim(), pins: pins.map((p) => ({ label: p.label.trim(), lat: String(Number(p.lat)), lon: String(Number(p.lon)) })), name: hf.name.value.trim(), photo: home.photo.getValue(), titleLines: hf.titleLines.value.trim(), bio: hf.bio.value.trim(),
         buttons: home.buttons.getValue().filter((b) => b.label.trim()), contactTitle: hf.contactTitle.value.trim(), contactSub: hf.contactSub.value.trim(),
         contact: home.contact.getValue().filter((r) => r.label.trim() || r.value.trim()), stats: home.stats.getValue().filter((r) => r.num.trim() || r.label.trim()),
         overviewHeading: hf.overviewHeading.value.trim(), showOverview: hf.showOverview.checked };
@@ -877,7 +897,7 @@ $("#loginForm").addEventListener("submit", async (e) => {
       Object.assign(S, { V: opened.obj, key: opened.key, salt: opened.salt, iter: opened.iter, vaultSha: file.sha });
       f.password.value = "";
       await offerDraft(vf.updated);
-      if (migrate(S.V)) { S.unpublished = true; setTimeout(() => toast("Your pages are now grouped into Works, Hobbies and Stories. Review the Categories, then Publish."), 400); }
+      if (migrate(S.V)) { S.unpublished = true; setTimeout(() => toast("Updated to the new blue tech design. Review, then Publish."), 400); }
       enterApp();
     } catch (err) { loginMsg(err.message || String(err)); }
   });
