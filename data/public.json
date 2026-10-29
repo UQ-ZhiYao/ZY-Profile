@@ -4,10 +4,10 @@
  "logo": "",
  "tagline": "Stories are shared with members. Sign in to read them.",
  "footer": "© 2026 Ng Zhi Yao · St Lucia, Queensland, Australia",
- "accent": "#3967ac",
+ "accent": "#2563eb",
  "requestEmail": "",
- "version": 2,
- "updated": "2026-10-23T06:24:22.278Z",
+ "version": 3,
+ "updated": "2026-10-29T11:18:43.648Z",
  "categories": [
   {
    "id": "works",
@@ -105,7 +105,24 @@
      }
     ],
     "overviewHeading": "Site Overview",
-    "showOverview": true
+    "showOverview": true,
+    "pins": [
+     {
+      "label": "Singapore",
+      "lat": "1.352",
+      "lon": "103.82"
+     },
+     {
+      "label": "Kuala Lumpur",
+      "lat": "3.139",
+      "lon": "101.687"
+     },
+     {
+      "label": "Brisbane",
+      "lat": "-27.47",
+      "lon": "153.03"
+     }
+    ]
    },
    "items": [],
    "category": ""
