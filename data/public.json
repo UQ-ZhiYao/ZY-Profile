@@ -7,7 +7,7 @@
  "accent": "#2563eb",
  "requestEmail": "",
  "version": 3,
- "updated": "2026-10-29T11:20:12.560Z",
+ "updated": "2026-10-29T11:23:07.185Z",
  "categories": [
   {
    "id": "works",
@@ -298,7 +298,7 @@
      "progress": null
     }
    ],
-   "category": "hobbies"
+   "category": "works"
   },
   {
    "order": 2,
