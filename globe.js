@@ -9,7 +9,9 @@ const RAD = Math.PI / 180;
 window.ZYGlobe = function (canvas, opts) {
   const data = window.ZY_GLOBE; if (!data || !canvas.getContext) return () => {};
   const ctx = canvas.getContext("2d");
-  const pins = (opts.pins || []).filter((p) => Number.isFinite(+p.lat) && Number.isFinite(+p.lon)).map((p) => ({ label: p.label || "", lat: +p.lat, lon: +p.lon }));
+  const clean = (list) => (list || []).filter((p) => p.lat !== "" && p.lon !== "" && Number.isFinite(+p.lat) && Number.isFinite(+p.lon)).map((p) => ({ label: p.label || "", lat: +p.lat, lon: +p.lon }));
+  let pins = clean(opts.pins);
+  let arcs = opts.arcs !== false;
   const accent = opts.accent || "#2563eb";
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const avgLon = pins.length ? pins.reduce((s, p) => s + p.lon, 0) / pins.length : 115;
@@ -25,7 +27,9 @@ window.ZYGlobe = function (canvas, opts) {
   function resize() {
     dpr = Math.min(2, window.devicePixelRatio || 1);
     const r = canvas.getBoundingClientRect(); W = r.width * dpr; H = r.height * dpr;
-    canvas.width = W; canvas.height = H; R = Math.min(W, H * 1.6) / 2 * 0.92; cx = W / 2; cy = R + 40 * dpr;
+    canvas.width = W; canvas.height = H;
+    if (opts.fit === "full") { R = Math.min(W, H) / 2 * 0.86; cx = W / 2; cy = H / 2; }
+    else { R = Math.min(W, H * 1.6) / 2 * 0.92; cx = W / 2; cy = R + 40 * dpr; }
   }
   function project(lon, lat, l0, p0) {
     const cosc = Math.sin(p0) * Math.sin(lat) + Math.cos(p0) * Math.cos(lat) * Math.cos(lon - l0);
@@ -46,7 +50,7 @@ window.ZYGlobe = function (canvas, opts) {
   function draw(now) {
     const time = (now - t0) / 1000;
     if (!dragging && !reduce) drift = Math.sin(time * 0.12) * 18;
-    const l0 = (lon0 + drift) * RAD, p0 = lat0 * RAD;
+    const l0 = (lon0 + drift) * RAD, p0 = lat0 * RAD; view.l0 = l0; view.p0 = p0;
     ctx.clearRect(0, 0, W, H);
 
     // sphere
@@ -79,7 +83,7 @@ window.ZYGlobe = function (canvas, opts) {
 
     // arcs between pins
     const pr = pins.map((p) => [p.lon * RAD, p.lat * RAD]);
-    for (let k = 0; k + 1 < pr.length; k++) {
+    for (let k = 0; arcs && k + 1 < pr.length; k++) {
       ctx.beginPath(); let pen = false; const steps = 48;
       for (let s = 0; s <= steps; s++) {
         const t = s / steps; const [lo, la] = slerp(pr[k], pr[k + 1], t);
@@ -126,14 +130,31 @@ window.ZYGlobe = function (canvas, opts) {
   }
 
   // drag to spin
-  canvas.addEventListener("pointerdown", (e) => { dragging = { x: e.clientX, y: e.clientY, lon: lon0 + drift, lat: lat0 }; canvas.setPointerCapture(e.pointerId); });
+  const view = { l0: 0, p0: 0 };
+  let downAt = null;
+  canvas.addEventListener("pointerdown", (e) => { downAt = { x: e.clientX, y: e.clientY }; dragging = { x: e.clientX, y: e.clientY, lon: lon0 + drift, lat: lat0 }; canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener("pointermove", (e) => {
     if (!dragging) return;
     lon0 = dragging.lon - (e.clientX - dragging.x) * 0.35; drift = 0;
     lat0 = Math.max(-60, Math.min(60, dragging.lat + (e.clientY - dragging.y) * 0.25));
     if (reduce) draw(performance.now());
   });
-  const end = () => { if (dragging) { t0 = performance.now(); } dragging = null; };
+  const end = (e) => {
+    if (dragging) { t0 = performance.now(); }
+    dragging = null;
+    // a click (not a drag) → report the lat/lon under the pointer
+    if (opts.onPick && downAt && e && e.type === "pointerup" && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 5) {
+      const r = canvas.getBoundingClientRect();
+      const X = ((e.clientX - r.left) * dpr - cx) / R, Y = -((e.clientY - r.top) * dpr - cy) / R, rho = Math.hypot(X, Y);
+      if (rho <= 1) {
+        const c = Math.asin(rho), p0 = view.p0, l0 = view.l0;
+        const lat = rho < 1e-9 ? p0 : Math.asin(Math.cos(c) * Math.sin(p0) + Y * Math.sin(c) * Math.cos(p0) / rho);
+        const lon = l0 + Math.atan2(X * Math.sin(c), rho * Math.cos(c) * Math.cos(p0) - Y * Math.sin(c) * Math.sin(p0));
+        opts.onPick(+(lat / RAD).toFixed(3), +((((lon / RAD) + 540) % 360) - 180).toFixed(3));
+      }
+    }
+    downAt = null;
+  };
   canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", end);
 
   resize();
@@ -141,6 +162,13 @@ window.ZYGlobe = function (canvas, opts) {
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; cancelAnimationFrame(raf); if (visible) raf = requestAnimationFrame(draw); });
   io.observe(canvas);
   raf = requestAnimationFrame(draw);
-  return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
+  const stop = () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
+  stop.setPins = (list, focus) => {
+    pins = clean(list);
+    if (focus && pins.length) { const p = pins[pins.length - 1]; lon0 = p.lon; lat0 = Math.max(-45, Math.min(45, p.lat - 10)); drift = 0; t0 = performance.now(); }
+    if (reduce) draw(performance.now());
+  };
+  stop.setArcs = (on) => { arcs = !!on; if (reduce) draw(performance.now()); };
+  return stop;
 };
 })();

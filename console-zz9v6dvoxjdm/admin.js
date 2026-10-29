@@ -326,7 +326,7 @@ async function publish(btn) {
       { path: FILES.vault, text: JSON.stringify(vault) },
     ], `Update site content (${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC)`);
     S.vaultSha = res.entries.find((e) => e.path === FILES.vault).sha;
-    S.unpublished = false; paintPublishBar();
+    S.unpublished = false; paintPublishBar(); S.lastPublished = new Date().toISOString();
     try { localStorage.removeItem(draftKey()); } catch {}
     toast("Published — zy-profile.com updates in about a minute.", "ok");
   });
@@ -355,7 +355,10 @@ async function go(view, tabId = null) {
   drawSidebar();
   const v = $("#view"); v.onclick = null; v.innerHTML = "";
   try {
-    if (view === "site") siteView(v);
+    if (S.cleanup) { try { S.cleanup(); } catch {} S.cleanup = null; }
+    if (view === "overview") overviewView(v);
+    else if (view === "globe") globeView(v);
+    else if (view === "site") siteView(v);
     else if (view === "categories") categoriesView(v);
     else if (view === "tab") tabView(v, tabId);
     else if (view === "members") membersView(v);
@@ -503,7 +506,7 @@ function tabView(v, tabId) {
       <div class="span2">${field("Bio", textarea("bio", h.bio, 4))}</div>
       <div class="span2" id="buttonsSlot"></div>
       <h2 class="span2">Globe</h2>
-      <div class="span2" id="pinsSlot"></div>
+      <div class="span2 globe-link"><button type="button" class="btn" data-goto-globe>🌐 Edit globe places (${(h.pins || DEFAULT_PINS).length})</button> <span class="hint">Search cities or click on the globe to add places.</span></div>
       <h2 class="span2">Contact card</h2>
       ${field("Card title", input("contactTitle", h.contactTitle))}
       ${field("Card subtitle", input("contactSub", h.contactSub))}
@@ -544,13 +547,11 @@ function tabView(v, tabId) {
       photo: imageField({ label: "Photo (optional)", value: h.photo, max: 320 }),
       buttons: rowsEditor({ label: "Buttons", rows: h.buttons || [], addText: "Add button", fields: [{ key: "label", label: "Label" }, { key: "target", label: "Links to", type: "select", options: tabOpts }, { key: "style", label: "Style", type: "select", options: () => [["primary", "Solid"], ["outline", "Outline"]] }] }),
       contact: rowsEditor({ label: "Contact rows", rows: h.contact || [], addText: "Add row", fields: [{ key: "label", label: "Label" }, { key: "value", label: "Value", flex: 2 }] }),
-      pins: rowsEditor({ label: "Globe pins (places on the spinning globe, joined by arcs in this order)", rows: h.pins || DEFAULT_PINS, addText: "Add place",
-        hint: "Latitude/longitude: search “<city> coordinates”. South and West are negative.",
-        fields: [{ key: "label", label: "Place name", flex: 2 }, { key: "lat", label: "Latitude" }, { key: "lon", label: "Longitude" }] }),
       stats: rowsEditor({ label: "Stats strip", rows: h.stats || [], addText: "Add stat", fields: [{ key: "num", label: "Number" }, { key: "label", label: "Label", flex: 2 }] }),
     };
     $("#photoSlot", v).append(home.photo); $("#buttonsSlot", v).append(home.buttons);
-    $("#contactSlot", v).append(home.contact); $("#statsSlot", v).append(home.stats); $("#pinsSlot", v).append(home.pins);
+    $("#contactSlot", v).append(home.contact); $("#statsSlot", v).append(home.stats);
+    $("[data-goto-globe]", v).addEventListener("click", () => go("globe"));
   }
 
   $("#saveTab", v).addEventListener("click", () => {
@@ -564,10 +565,7 @@ function tabView(v, tabId) {
       });
     } else {
       const hf = home.form;
-      const pins = home.pins.getValue().filter((p) => p.label.trim() || p.lat || p.lon);
-      const badPin = pins.find((p) => !(Math.abs(Number(p.lat)) <= 90 && Math.abs(Number(p.lon)) <= 180 && p.lat !== "" && p.lon !== ""));
-      if (badPin) return toast(`Check the coordinates for “${badPin.label || "a place"}”: latitude −90…90, longitude −180…180.`, "err");
-      data.home = { headline: hf.headline.value.trim(), pins: pins.map((p) => ({ label: p.label.trim(), lat: String(Number(p.lat)), lon: String(Number(p.lon)) })), name: hf.name.value.trim(), photo: home.photo.getValue(), titleLines: hf.titleLines.value.trim(), bio: hf.bio.value.trim(),
+      data.home = { headline: hf.headline.value.trim(), pins: h.pins || clone(DEFAULT_PINS), arcs: h.arcs !== false, name: hf.name.value.trim(), photo: home.photo.getValue(), titleLines: hf.titleLines.value.trim(), bio: hf.bio.value.trim(),
         buttons: home.buttons.getValue().filter((b) => b.label.trim()), contactTitle: hf.contactTitle.value.trim(), contactSub: hf.contactSub.value.trim(),
         contact: home.contact.getValue().filter((r) => r.label.trim() || r.value.trim()), stats: home.stats.getValue().filter((r) => r.num.trim() || r.label.trim()),
         overviewHeading: hf.overviewHeading.value.trim(), showOverview: hf.showOverview.checked };
@@ -706,6 +704,160 @@ async function itemDialog(tab, item = null) {
   });
   if (ok) { toast(item ? "Item saved" : "Item added", "ok"); go("tab", tab.id); }
 }
+
+// ─────────────────────────── Overview ───────────────────────────
+function ago(iso) {
+  if (!iso) return "never";
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 90) return "just now"; if (s < 3600) return `${Math.round(s / 60)} min ago`; if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+  return `${Math.round(s / 86400)} days ago`;
+}
+function overviewView(v) {
+  const all = tabs(), vis = all.filter((t) => t.visible), items = all.reduce((n, t) => n + (t.items || []).length, 0);
+  const active = S.V.members.filter((m) => m.status === "active").length;
+  const home = all.find((t) => t.layout === "home");
+  const pins = home?.home?.pins || DEFAULT_PINS;
+  const maxItems = Math.max(1, ...cats().map((c) => all.filter((t) => t.category === c.id).reduce((n, t) => n + (t.items || []).length, 0)));
+  v.innerHTML = `
+    <section class="hello">
+      <h1>${new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening"}, ${esc((S.V.public.name || "").split(" ").slice(-1)[0] || "there")}.</h1>
+      <p>${S.unpublished ? "You have unpublished changes. Publish when you're ready." : "Everything is published and live on zy-profile.com."}</p>
+      <div class="btn-row">
+        ${S.unpublished ? '<button class="btn white" data-q="publish">Publish now</button>' : ""}
+        <a class="btn" href="${SITE_URL}" target="_blank" rel="noopener">View website ↗</a>
+      </div>
+    </section>
+    <div class="stats">
+      <div class="stat"><div class="k">Pages</div><div class="v">${vis.length}</div><div class="s">${all.length - vis.length} hidden draft${all.length - vis.length === 1 ? "" : "s"}</div></div>
+      <div class="stat"><div class="k">Items</div><div class="v">${items}</div><div class="s">across all pages</div></div>
+      <div class="stat"><div class="k">Members</div><div class="v">${active}</div><div class="s">can read members-only pages</div></div>
+      <div class="stat"><div class="k">Last publish</div><div class="v" style="font-size:22px;padding:5px 0 3px">${esc(ago(S.lastPublished))}</div><div class="s">${S.unpublished ? "changes waiting" : "up to date"}</div></div>
+    </div>
+    <section class="panel"><h2>Quick actions</h2>
+      <div class="quick">
+        <button data-q="newtab"><span class="qi">＋</span><span><b>New page</b><small>Add a tab to the menu</small></span></button>
+        <button data-q="globe"><span class="qi">🌐</span><span><b>Globe places</b><small>${pins.length} place${pins.length === 1 ? "" : "s"} on the globe</small></span></button>
+        <button data-q="member"><span class="qi">👤</span><span><b>Add member</b><small>Give someone access to Stories</small></span></button>
+        <button data-q="site"><span class="qi">🎨</span><span><b>Branding</b><small>Logo, colour, resume</small></span></button>
+        <button data-q="categories"><span class="qi">◇</span><span><b>Categories</b><small>Works, Hobbies, Stories…</small></span></button>
+        <button data-q="backup"><span class="qi">⤓</span><span><b>Backup</b><small>Download everything</small></span></button>
+      </div>
+    </section>
+    <section class="panel"><h2>Content by category</h2>
+      <div class="cat-bars">${cats().map((c) => {
+        const ts = all.filter((t) => t.category === c.id), n = ts.reduce((k, t) => k + (t.items || []).length, 0);
+        return `<div class="cat-bar"><b>${esc(c.name)}${c.locked ? " 🔒" : ""}</b><span class="track"><span style="width:${Math.round(n / maxItems * 100)}%"></span></span><span class="muted small">${ts.length} pg · ${n}</span></div>`;
+      }).join("")}</div>
+    </section>`;
+  v.onclick = (e) => {
+    const q = e.target.closest("[data-q]")?.dataset.q; if (!q) return;
+    if (q === "publish") return publish(e.target.closest("button"));
+    if (q === "newtab") return newTabDialog();
+    if (q === "member") { go("members").then(() => addMemberDialog()); return; }
+    go(q);
+  };
+}
+
+// ─────────────────────────── Globe & places ───────────────────────────
+async function geocode(q) {
+  const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=en&q=${encodeURIComponent(q)}`, { headers: { Accept: "application/json" } });
+  if (!r.ok) throw new Error("Place search is busy. Try again in a moment.");
+  return (await r.json()).map((x) => ({ label: x.name || String(x.display_name).split(",")[0], full: x.display_name, lat: (+x.lat).toFixed(3), lon: (+x.lon).toFixed(3) }));
+}
+async function reverseName(lat, lon) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=en&lat=${lat}&lon=${lon}`, { headers: { Accept: "application/json" } });
+    const a = (await r.json()).address || {};
+    return a.city || a.town || a.village || a.county || a.state || a.country || "New place";
+  } catch { return "New place"; }
+}
+function globeView(v) {
+  const home = tabs().find((t) => t.layout === "home");
+  if (!home) { v.innerHTML = `<div class="panel"><h2>Globe & places</h2><p class="muted">The globe lives on your Home page. Create a page with the “Home” layout first.</p></div>`; return; }
+  home.home ||= {};
+  let pins = clone(home.home.pins && home.home.pins.length ? home.home.pins : DEFAULT_PINS).map((p) => ({ label: p.label || "", lat: String(p.lat), lon: String(p.lon) }));
+  let arcs = home.home.arcs !== false;
+  v.innerHTML = `
+    <header class="view-head"><div><div class="crumb">Home page</div><h1>Globe &amp; places</h1>
+      <p class="muted">These places appear as pins on the home-page globe${arcs ? ", joined by arcs in this order" : ""}. Search for a city, or click anywhere on the globe to drop a pin.</p></div>
+      <button class="btn primary" id="saveGlobe">Save places</button></header>
+    <div class="globe-layout">
+      <div>
+        <section class="panel">
+          <h2>Add a place</h2>
+          <form class="search-row" id="geoForm" onsubmit="return false"><input id="geoQ" placeholder="e.g. Tokyo, Hong Kong, London…" autocomplete="off"/><button class="btn primary" type="submit">Search</button></form>
+          <div class="search-results" id="geoRes"></div>
+          <p class="hint" style="margin-top:.6rem">Place search by OpenStreetMap.</p>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2>Places <span class="muted small" id="pinCount"></span></h2>
+            <label class="check small"><input type="checkbox" id="arcsOn" ${arcs ? "checked" : ""}/> Connect with arcs</label></div>
+          <div class="pin-list" id="pinList"></div>
+          <p class="hint" style="margin-top:.7rem">Latitude: −90 (south) to 90 (north). Longitude: −180 (west) to 180 (east). Use ↑ ↓ to change the arc order.</p>
+        </section>
+      </div>
+      <section class="panel globe-preview">
+        <canvas id="globePrev" aria-label="Globe preview"></canvas>
+        <div class="globe-tip"><b>Tip:</b> drag to spin · click a spot to add a pin there</div>
+      </section>
+    </div>`;
+  const ctrl = window.ZYGlobe ? window.ZYGlobe($("#globePrev", v), { fit: "full", pins, arcs, accent: S.V.public.accent || "#2563eb",
+    onPick: async (lat, lon) => { const label = await reverseName(lat, lon); add({ label, lat: String(lat), lon: String(lon) }); toast(`Added ${label} — rename it if you like`, "ok"); } }) : null;
+  S.cleanup = () => ctrl && ctrl();
+  const sync = (focus) => { $("#pinCount", v).textContent = `(${pins.length})`; ctrl && ctrl.setPins(pins, focus); };
+  const draw = () => {
+    $("#pinList", v).innerHTML = pins.map((p, i) => `<div class="pin-row" data-i="${i}">
+      <span class="pin-no">${String(i + 1).padStart(2, "0")}</span>
+      <input data-k="label" value="${esc(p.label)}" placeholder="Place name" aria-label="Place name"/>
+      <input data-k="lat" value="${esc(p.lat)}" placeholder="Latitude" aria-label="Latitude" inputmode="decimal"/>
+      <input data-k="lon" value="${esc(p.lon)}" placeholder="Longitude" aria-label="Longitude" inputmode="decimal"/>
+      <span class="pin-acts"><button class="icon-btn" data-a="up" ${i ? "" : "disabled"} title="Earlier">↑</button><button class="icon-btn" data-a="down" ${i < pins.length - 1 ? "" : "disabled"} title="Later">↓</button><button class="icon-btn danger" data-a="del" title="Remove">✕</button></span>
+    </div>`).join("") || '<div class="empty">No places yet. Search above or click on the globe.</div>';
+    sync(false);
+  };
+  const add = (p) => { pins.push(p); S.dirty = true; draw(); sync(true); };
+  draw();
+  $("#pinList", v).addEventListener("input", (e) => { const row = e.target.closest(".pin-row"); if (!row) return; pins[+row.dataset.i][e.target.dataset.k] = e.target.value; S.dirty = true; sync(false); });
+  $("#pinList", v).addEventListener("click", (e) => {
+    const b = e.target.closest("[data-a]"); if (!b) return; const i = +b.closest(".pin-row").dataset.i;
+    if (b.dataset.a === "del") pins.splice(i, 1);
+    if (b.dataset.a === "up") [pins[i - 1], pins[i]] = [pins[i], pins[i - 1]];
+    if (b.dataset.a === "down") [pins[i + 1], pins[i]] = [pins[i], pins[i + 1]];
+    S.dirty = true; draw();
+  });
+  $("#arcsOn", v).addEventListener("change", (e) => { arcs = e.target.checked; S.dirty = true; ctrl && ctrl.setArcs(arcs); });
+  $("#geoForm", v).addEventListener("submit", async () => {
+    const q = $("#geoQ", v).value.trim(); if (!q) return;
+    const res = $("#geoRes", v); res.innerHTML = '<span class="muted small">Searching…</span>';
+    try {
+      const list = await geocode(q);
+      res.innerHTML = list.map((r, k) => `<button type="button" data-r="${k}"><span>📍</span><span><b>${esc(r.label)}</b><br/><span class="muted small">${esc(r.full)}</span></span><span class="add">Add</span></button>`).join("") || '<span class="muted small">No places found. Try a different spelling.</span>';
+      res.onclick = (e) => { const b = e.target.closest("[data-r]"); if (!b) return; const r = list[+b.dataset.r]; add({ label: r.label, lat: r.lat, lon: r.lon }); res.innerHTML = ""; $("#geoQ", v).value = ""; toast(`Added ${r.label}`, "ok"); };
+    } catch (err) { res.innerHTML = `<span class="msg err">${esc(err.message || "Search failed.")}</span>`; }
+  });
+  $("#saveGlobe", v).addEventListener("click", () => {
+    const clean = pins.filter((p) => p.label.trim() || p.lat || p.lon);
+    const bad = clean.find((p) => !(p.lat !== "" && p.lon !== "" && Math.abs(Number(p.lat)) <= 90 && Math.abs(Number(p.lon)) <= 180));
+    if (bad) return toast(`Check the coordinates for “${bad.label || "a place"}”.`, "err");
+    home.home.pins = clean.map((p) => ({ label: p.label.trim(), lat: String(Number(p.lat)), lon: String(Number(p.lon)) }));
+    home.home.arcs = arcs;
+    S.dirty = false; changed(); toast("Places saved — publish to update the website", "ok");
+  });
+}
+
+// ─────────────────────────── Sign-in artwork ───────────────────────────
+let loginArtStop = null;
+function startLoginArt() {
+  const cv = $("#loginArt"); if (!cv || !window.ZYStage || loginArtStop) return;
+  const colors = ["#2563eb", "#0891b2", "#4f46e5", "#0284c7", "#1d4ed8", "#0e7490"];
+  const n = 6, t0 = performance.now();
+  loginArtStop = window.ZYStage(cv, colors.map((c, k) => ({ formation: k, color: c })), () => {
+    const t = ((performance.now() - t0) / 1000) / 3.2;          // hold ~2 s, morph ~1 s, ping-pong through formations
+    const cyc = t % (2 * (n - 1)); const x = cyc < n - 1 ? cyc : 2 * (n - 1) - cyc;
+    const i = Math.floor(x), f = x - i; return i + Math.max(0, (f - 0.6) / 0.4);
+  });
+}
+function stopLoginArt() { if (loginArtStop) { loginArtStop(); loginArtStop = null; } }
 
 // ─────────────────────────── Categories ───────────────────────────
 function categoriesView(v) {
@@ -896,6 +1048,7 @@ $("#loginForm").addEventListener("submit", async (e) => {
       const opened = await ZYCrypto.openVault(vf, f.password.value);
       Object.assign(S, { V: opened.obj, key: opened.key, salt: opened.salt, iter: opened.iter, vaultSha: file.sha });
       f.password.value = "";
+      S.lastPublished = vf.updated || null;
       await offerDraft(vf.updated);
       if (migrate(S.V)) { S.unpublished = true; setTimeout(() => toast("Updated to the new blue tech design. Review, then Publish."), 400); }
       enterApp();
@@ -943,7 +1096,8 @@ function enterApp() {
   $("#whoami").textContent = `${S.gh.owner}/${S.gh.repo}`;
   $("#viewSite").href = SITE_URL;
   paintPublishBar();
-  if (S.view === "site" && !S.tabId) go("site");
+  stopLoginArt();
+  if (S.view === "site" && !S.tabId) go("overview");
 }
 
 // ── Desktop app (PWA) ──
@@ -957,4 +1111,5 @@ if (matchMedia("(display-mode: standalone)").matches) document.body.classList.ad
 
 if (!window.ZYCrypto || !ZYCrypto.supported) loginMsg("This browser can't run the console. Use a recent Chrome, Edge, Firefox or Safari.");
 $("#boot").hidden = true; $("#login").hidden = false;
+requestAnimationFrame(startLoginArt);
 })();

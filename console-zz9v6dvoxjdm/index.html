@@ -7,63 +7,82 @@
   <meta name="referrer" content="no-referrer"/>
   <title>ZY Admin</title>
   <link rel="manifest" href="manifest.webmanifest"/>
-  <meta name="theme-color" content="#0f172a"/>
+  <meta name="theme-color" content="#ffffff"/>
   <meta name="application-name" content="ZY Admin"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="ZY Admin"/>
   <link rel="icon" href="icons/icon-192.png" type="image/png"/>
   <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"/>
   <link rel="stylesheet" href="admin.css"/>
 </head>
 <body>
 
 <div id="boot" class="boot"><div class="spinner"></div></div>
 
+<!-- Sign in -->
 <section id="login" class="login" hidden>
-  <form id="loginForm" class="login-card" autocomplete="off">
-    <div class="login-title">ZY-Profile admin</div>
-    <p class="muted small">Edits are published to your GitHub repository.</p>
-    <label>Repository<input name="repo" required placeholder="owner/name" spellcheck="false"/></label>
-    <label>Branch<input name="branch" required value="main" spellcheck="false"/></label>
-    <div id="tokenRow" class="token-row">
-      <label class="token-input">GitHub token<input name="token" type="password" placeholder="github_pat_…" spellcheck="false" autocomplete="off"/></label>
-      <div class="token-saved small">GitHub token saved on this computer · <a href="#" id="changeToken">change</a></div>
+  <div class="login-art">
+    <canvas id="loginArt" aria-hidden="true"></canvas>
+    <div class="login-art-copy">
+      <div class="brand-row"><span class="brand-mark">ZY</span><span class="brand-word">ZY Admin</span></div>
+      <h1>Your website,<br/>in one place.</h1>
+      <p>Edit pages, members, the globe and branding, then publish to zy-profile.com in one click.</p>
     </div>
-    <label class="check"><input type="checkbox" name="remember"/> Remember token on this computer</label>
-    <label>Admin password<input name="password" type="password" required autocomplete="current-password"/></label>
-    <button class="btn primary block" type="submit">Unlock</button>
-    <div id="loginMsg" class="msg" role="status"></div>
-    <button type="button" class="btn ghost block install-btn" data-install hidden>⤓ Install as desktop app</button>
-  </form>
+  </div>
+  <div class="login-side">
+    <form id="loginForm" class="login-card" autocomplete="off">
+      <div class="login-title">Welcome back</div>
+      <p class="muted small">Unlock the console to edit and publish.</p>
+      <div class="two">
+        <label>Repository<input name="repo" required placeholder="owner/name" spellcheck="false"/></label>
+        <label>Branch<input name="branch" required value="main" spellcheck="false"/></label>
+      </div>
+      <div id="tokenRow" class="token-row">
+        <label class="token-input">GitHub token<input name="token" type="password" placeholder="github_pat_…" spellcheck="false" autocomplete="off"/></label>
+        <div class="token-saved small"><span class="ok-dot"></span>GitHub token saved on this computer · <a href="#" id="changeToken">change</a></div>
+      </div>
+      <label class="check"><input type="checkbox" name="remember"/> Remember token on this computer</label>
+      <label>Admin password<input name="password" type="password" required autocomplete="current-password"/></label>
+      <button class="btn primary block lg" type="submit">Unlock</button>
+      <div id="loginMsg" class="msg" role="status"></div>
+      <button type="button" class="btn ghost block install-btn" data-install hidden>⤓ Install as desktop app</button>
+    </form>
 
-  <form id="setupForm" class="login-card" hidden>
-    <div class="login-title">First-time setup</div>
-    <p class="muted small">No admin data found in this repository yet. Choose an admin password — it encrypts your working copy and member list. There is no way to recover it, so store it in a password manager.</p>
-    <label>Admin password (10+ characters)<input name="p1" type="password" minlength="10" required autocomplete="new-password"/></label>
-    <label>Repeat password<input name="p2" type="password" minlength="10" required autocomplete="new-password"/></label>
-    <button class="btn primary block" type="submit">Create and load my existing content</button>
-    <a href="#" id="setupBack" class="small">← Back</a>
-  </form>
+    <form id="setupForm" class="login-card" hidden>
+      <div class="login-title">First-time setup</div>
+      <p class="muted small">No admin data found in this repository yet. Choose an admin password. It encrypts your working copy and member list, and it can't be recovered, so store it in a password manager.</p>
+      <label>Admin password (10+ characters)<input name="p1" type="password" minlength="10" required autocomplete="new-password"/></label>
+      <label>Repeat password<input name="p2" type="password" minlength="10" required autocomplete="new-password"/></label>
+      <button class="btn primary block lg" type="submit">Create and load my existing content</button>
+      <a href="#" id="setupBack" class="small">← Back</a>
+    </form>
+  </div>
 </section>
 
+<!-- Console -->
 <div id="app" class="app" hidden>
   <aside class="side">
     <div class="side-brand">
       <div class="side-mark">ZY</div>
-      <div><div class="side-title">Admin console</div><div class="side-sub" id="whoami"></div></div>
+      <div><div class="side-title">ZY Admin</div><div class="side-sub" id="whoami"></div></div>
     </div>
     <nav class="side-nav">
-      <button data-view="site" class="side-link">Site settings</button>
-      <button data-view="categories" class="side-link">Categories</button>
+      <button data-view="overview" class="side-link"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Overview</button>
+      <button data-view="site" class="side-link"><svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Site settings</button>
+      <button data-view="globe" class="side-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>Globe &amp; places</button>
+      <button data-view="categories" class="side-link"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>Categories</button>
+      <div class="side-group"><span>People &amp; data</span></div>
+      <button data-view="members" class="side-link"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.5 3-5.5 6-5.5s5.4 2 6 5.5"/><path d="M16 4.5a3 3 0 0 1 0 6M21 20c-.4-2.6-1.8-4.4-3.8-5.1"/></svg>Members <span class="pill" id="memberCount" hidden></span></button>
+      <button data-view="backup" class="side-link"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Backup &amp; security</button>
       <div class="side-group">
         <span>Pages</span>
         <button class="icon-btn" id="newTabBtn" title="New page" aria-label="New page">＋</button>
       </div>
       <div id="tabList"></div>
-      <div class="side-group"><span>People</span></div>
-      <button data-view="members" class="side-link">Members <span class="pill grey" id="memberCount" hidden></span></button>
-      <div class="side-group"><span>Data</span></div>
-      <button data-view="backup" class="side-link">Backup &amp; security</button>
+
     </nav>
     <div class="side-foot">
       <button type="button" class="btn ghost small" data-install hidden>⤓ Install desktop app</button>
@@ -73,7 +92,7 @@
   </aside>
   <div class="main-col">
     <div class="publish-bar" id="publishBar" hidden>
-      <span id="publishNote"></span>
+      <span class="pb-dot"></span><span id="publishNote"></span>
       <button class="btn primary small" id="publishBtn">Publish to website</button>
     </div>
     <main class="view" id="view"></main>
@@ -85,6 +104,9 @@
 <div id="toastRoot" class="toast-root" aria-live="polite"></div>
 
 <script src="../crypto.js"></script>
+<script src="../globe-data.js"></script>
+<script src="../globe.js"></script>
+<script src="../pixel.js"></script>
 <script src="seed.js"></script>
 <script src="admin.js"></script>
 </body>

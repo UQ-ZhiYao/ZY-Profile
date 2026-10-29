@@ -434,7 +434,7 @@ function mountGlobe(root) {
   const cv = $("#globe", root); if (!cv || !window.ZYGlobe) return;
   const h = homeTab()?.home || {};
   const pins = Array.isArray(h.pins) && h.pins.length ? h.pins : DEFAULT_PINS;
-  globeStop = window.ZYGlobe(cv, { pins, accent: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb" });
+  globeStop = window.ZYGlobe(cv, { pins, arcs: h.arcs !== false, accent: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb" });
 }
 const ART = ["art-a", "art-b", "art-c", "art-d"];
 
